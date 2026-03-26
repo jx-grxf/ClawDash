@@ -20,7 +20,6 @@ It is built for personal, self-hosted, and trusted operator setups, not as a hos
 
 ---
 
-<a id="contents"></a>
 ## Contents
 
 - [Highlights](#highlights)
@@ -39,7 +38,6 @@ It is built for personal, self-hosted, and trusted operator setups, not as a hos
 
 ---
 
-<a id="highlights"></a>
 ## Highlights
 
 | | Feature |
@@ -55,7 +53,6 @@ It is built for personal, self-hosted, and trusted operator setups, not as a hos
 
 ---
 
-<a id="scope"></a>
 ## Scope
 
 - **Self-hosted only**
@@ -73,7 +70,6 @@ By default, ClawDash prefers safe and conservative behavior:
 
 ---
 
-<a id="tech-stack"></a>
 ## Tech Stack
 
 | Layer | Technologies |
@@ -86,7 +82,6 @@ By default, ClawDash prefers safe and conservative behavior:
 
 ---
 
-<a id="requirements"></a>
 ## Requirements
 
 - **Node.js** `20+` recommended
@@ -104,7 +99,6 @@ ClawDash expects local OpenClaw state such as:
 
 ---
 
-<a id="quick-start"></a>
 ## Quick Start
 
 ```bash
@@ -122,7 +116,6 @@ If port `3000` is busy, Next.js will automatically move to the next free port.
 
 ---
 
-<a id="features"></a>
 ## Features
 
 ### Dashboard
@@ -173,7 +166,6 @@ If port `3000` is busy, Next.js will automatically move to the next free port.
 
 ---
 
-<a id="configuration"></a>
 ## Configuration
 
 ClawDash works with runtime settings stored locally plus optional environment variables.
@@ -206,7 +198,6 @@ That file is managed by the dashboard settings page and includes:
 
 ---
 
-<a id="settings"></a>
 ## Settings
 
 The `/settings` page lets you toggle and persist:
@@ -223,7 +214,6 @@ These are intended for local operator workflows, so they are stored on disk inst
 
 ---
 
-<a id="security"></a>
 ## Security
 
 ClawDash is designed for trusted local environments.
@@ -237,7 +227,6 @@ For reporting vulnerabilities or deployment guidance, see [SECURITY.md](SECURITY
 
 ---
 
-<a id="architecture"></a>
 ## Architecture
 
 ```text
@@ -266,7 +255,6 @@ In practice, ClawDash combines:
 
 ---
 
-<a id="api-classification"></a>
 ## API Classification
 
 ### Read-only
@@ -296,7 +284,6 @@ In practice, ClawDash combines:
 
 ---
 
-<a id="roadmap-notes"></a>
 ## Roadmap Notes
 
 Current project state already includes:
@@ -316,7 +303,6 @@ Likely next steps:
 
 ---
 
-<a id="license"></a>
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
