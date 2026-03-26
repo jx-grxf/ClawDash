@@ -77,6 +77,7 @@ export function OpenClawCommandConsole() {
   const [results, setResults] = useState<CommandRun[]>([]);
   const [favorites, setFavorites] = useState<string[][]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [activeCommand, setActiveCommand] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -158,12 +159,14 @@ export function OpenClawCommandConsole() {
   async function runArgs(args: string[], riskTier: CliRiskTier) {
     setIsRunning(true);
     setError(null);
+    setActiveCommand(`openclaw ${args.join(" ")}`);
     try {
       const needsConfirmation = riskTier === "state_mutating" || riskTier === "external_side_effect" || riskTier === "dangerous";
       if (needsConfirmation) {
         const ok = window.confirm(`Run ${riskTier} command?\n\nopenclaw ${args.join(" ")}`);
         if (!ok) {
           setIsRunning(false);
+          setActiveCommand("");
           return;
         }
       }
@@ -181,6 +184,7 @@ export function OpenClawCommandConsole() {
       setError(runError instanceof Error ? runError.message : "Command failed.");
     } finally {
       setIsRunning(false);
+      setActiveCommand("");
     }
   }
 
@@ -350,6 +354,23 @@ export function OpenClawCommandConsole() {
               <p className="mt-2 break-all font-mono text-sm">{commandPreview}</p>
             </div>
 
+            {isRunning ? (
+              <div className="mt-4 rounded-[20px] border border-sky-500/30 bg-sky-500/10 p-4">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-sky-200">Running OpenClaw command</p>
+                    <p className="mt-1 break-all font-mono text-xs text-sky-100/80">{activeCommand || commandPreview}</p>
+                  </div>
+                  <span className="rounded-full border border-sky-400/30 px-3 py-1 text-xs text-sky-200">
+                    in progress
+                  </span>
+                </div>
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-black/20">
+                  <div className="h-full w-1/3 animate-[pulse_1.2s_ease-in-out_infinite] rounded-full bg-sky-400" />
+                </div>
+              </div>
+            ) : null}
+
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 type="button"
@@ -418,7 +439,7 @@ export function OpenClawCommandConsole() {
                   <div className="mt-2 flex flex-wrap gap-3 text-xs text-[var(--text-muted)]">
                     <span>exit {result.exitCode}</span>
                     <span>{result.runtimeMs} ms</span>
-                    <span>{new Date(result.ranAt).toLocaleString("de-AT")}</span>
+                    <span>{new Date(result.ranAt).toLocaleString("en-US")}</span>
                   </div>
                   {result.stdoutPreview ? (
                     <pre className="mt-3 overflow-x-auto rounded-[14px] border border-[var(--border)] bg-black/20 p-3 text-xs text-[var(--text-muted)]">{result.stdoutPreview}</pre>
