@@ -19,6 +19,8 @@ import { OPENCLAW_AGENTS_DIR, OPENCLAW_CONFIG_PATH, OPENCLAW_HOME } from '@/lib/
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 const HIDDEN_AGENT_IDS = new Set(['codex'])
+const WORKING_ACTIVITY_WINDOW_MS = 45 * 1000
+const IDLE_ACTIVITY_WINDOW_MS = 15 * 60 * 1000
 const SESSION_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000
 const MAX_PARENT_SESSIONS_TO_PARSE = 40
 const ORPHAN_FALLBACK_WINDOW_MS = 15 * 60 * 1000
@@ -740,6 +742,8 @@ export async function GET() {
               try {
                 const files = await fs.readdir(agentSessionsDir)
                 for (const file of files) {
+                  if (!file.endsWith('.jsonl')) continue
+                  if (file.startsWith('probe-')) continue
                   const filePath = path.join(agentSessionsDir, file)
                   const stat = await fs.stat(filePath)
                   if (stat.mtimeMs > lastActive) {
@@ -754,9 +758,9 @@ export async function GET() {
 
           let state: 'idle' | 'working' | 'waiting' | 'offline'
           const timeDiff = now - lastActive
-          if (lastActive === 0 || timeDiff > 10 * 60 * 1000) {
+          if (lastActive === 0 || timeDiff > IDLE_ACTIVITY_WINDOW_MS) {
             state = 'offline'
-          } else if (timeDiff <= 2 * 60 * 1000) {
+          } else if (timeDiff <= WORKING_ACTIVITY_WINDOW_MS) {
             state = 'working'
           } else {
             state = 'idle'
