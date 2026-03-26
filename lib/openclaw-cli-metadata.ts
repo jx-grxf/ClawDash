@@ -31,6 +31,25 @@ export interface CliCommandNode {
 
 const metadataCache = new Map<string, CliCommandNode>();
 
+function buildFallbackMetadata(args: string[], description = "No metadata available for this command yet."): CliCommandNode {
+  const commandPath = args.filter((arg) => !arg.startsWith("--") && !arg.startsWith("-"));
+  const riskTier = inferRiskTier(commandPath);
+
+  return {
+    id: commandPath.join(".") || "root",
+    name: commandPath[commandPath.length - 1] || "openclaw",
+    description,
+    usage: commandPath.length > 0 ? `openclaw ${commandPath.join(" ")}` : "openclaw",
+    docsUrl: undefined,
+    options: [],
+    examples: [],
+    subcommands: [],
+    riskTier,
+    suggestedTimeoutMs: timeoutForRisk(riskTier),
+    requiresConfirmation: riskTier === "state_mutating" || riskTier === "external_side_effect" || riskTier === "dangerous",
+  };
+}
+
 function parseOptions(lines: string[]): CliOptionMeta[] {
   const options: CliOptionMeta[] = [];
   let current: CliOptionMeta | null = null;
@@ -141,13 +160,30 @@ function parseHelpText(args: string[], output: string): CliCommandNode {
 }
 
 export async function getCliMetadata(args: string[] = []): Promise<CliCommandNode> {
-  const cacheKey = args.join(" ");
+  const normalizedArgs = args[0] === "help" ? [] : args;
+  const cacheKey = normalizedArgs.join(" ");
   const cached = metadataCache.get(cacheKey);
   if (cached) return cached;
-  const { stdout, stderr } = await execOpenclaw([...args, "--help"]);
-  const parsed = parseHelpText(args, `${stdout}\n${stderr}`);
-  metadataCache.set(cacheKey, parsed);
-  return parsed;
+
+  const parseAndCache = (output: string, fallbackMessage?: string) => {
+    const parsed = output.trim()
+      ? parseHelpText(normalizedArgs, output)
+      : buildFallbackMetadata(normalizedArgs, fallbackMessage);
+    metadataCache.set(cacheKey, parsed);
+    return parsed;
+  };
+
+  try {
+    const { stdout, stderr } = await execOpenclaw([...normalizedArgs, "--help"]);
+    return parseAndCache(`${stdout}\n${stderr}`, "CLI metadata could not be loaded.");
+  } catch (error: unknown) {
+    const cliError = error as Error & { stdout?: string; stderr?: string };
+    const output = `${cliError.stdout || ""}\n${cliError.stderr || ""}`.trim();
+    if (output) {
+      return parseAndCache(output, "CLI metadata could not be loaded.");
+    }
+    return parseAndCache("", cliError.message || "CLI metadata could not be loaded.");
+  }
 }
 
 export function sanitizeCliArgs(args: unknown): string[] {

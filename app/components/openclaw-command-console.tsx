@@ -40,6 +40,23 @@ const GLOBAL_FLAGS = [
 const FAVORITES_KEY = "clawdash-cli-favorites";
 const HISTORY_KEY = "clawdash-cli-history";
 
+function normalizeMeta(payload: Partial<CliCommandNode> | null | undefined): CliCommandNode | null {
+  if (!payload) return null;
+  return {
+    id: payload.id || "unknown",
+    name: payload.name || "openclaw",
+    description: payload.description || "",
+    usage: payload.usage,
+    docsUrl: payload.docsUrl,
+    options: Array.isArray(payload.options) ? payload.options : [],
+    examples: Array.isArray(payload.examples) ? payload.examples : [],
+    subcommands: Array.isArray(payload.subcommands) ? payload.subcommands : [],
+    riskTier: payload.riskTier || "read_only",
+    suggestedTimeoutMs: typeof payload.suggestedTimeoutMs === "number" ? payload.suggestedTimeoutMs : 10_000,
+    requiresConfirmation: Boolean(payload.requiresConfirmation),
+  };
+}
+
 function riskTone(risk: CliRiskTier): string {
   if (risk === "read_only") return "border-emerald-500/30 bg-emerald-500/10 text-emerald-300";
   if (risk === "active_local") return "border-sky-500/30 bg-sky-500/10 text-sky-300";
@@ -83,7 +100,7 @@ export function OpenClawCommandConsole() {
   useEffect(() => {
     void fetch("/api/cli/metadata", { cache: "no-store" })
       .then((response) => response.json())
-      .then((payload) => setRootMeta(payload));
+      .then((payload) => setRootMeta(normalizeMeta(payload)));
     try {
       setFavorites(JSON.parse(window.localStorage.getItem(FAVORITES_KEY) || "[]"));
       setResults(JSON.parse(window.localStorage.getItem(HISTORY_KEY) || "[]"));
@@ -95,7 +112,7 @@ export function OpenClawCommandConsole() {
     void fetch(`/api/cli/metadata?path=${encodeURIComponent(selectedCommand)}`, { cache: "no-store" })
       .then((response) => response.json())
       .then((payload) => {
-        setNodeMeta(payload);
+        setNodeMeta(normalizeMeta(payload));
         setSelectedSubcommand("");
         setOptionValues({});
       });
@@ -106,7 +123,7 @@ export function OpenClawCommandConsole() {
     void fetch(`/api/cli/metadata?path=${encodeURIComponent(`${selectedCommand} ${selectedSubcommand}`)}`, { cache: "no-store" })
       .then((response) => response.json())
       .then((payload) => {
-        setNodeMeta(payload);
+        setNodeMeta(normalizeMeta(payload));
         setOptionValues({});
       });
   }, [selectedCommand, selectedSubcommand]);
@@ -400,7 +417,9 @@ export function OpenClawCommandConsole() {
                 <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4">
                   <p className="text-sm font-medium">Examples</p>
                   <div className="mt-2 space-y-2 text-xs text-[var(--text-muted)]">
-                    {effectiveMeta.examples.slice(0, 4).map((example) => <p key={example} className="font-mono">{example}</p>)}
+                    {effectiveMeta.examples.length > 0 ? effectiveMeta.examples.slice(0, 4).map((example) => <p key={example} className="font-mono">{example}</p>) : (
+                      <p>No examples available.</p>
+                    )}
                   </div>
                 </div>
               </div>

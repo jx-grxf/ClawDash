@@ -155,25 +155,14 @@ function parseCharacterSheet(sheet: SpriteData): LoadedCharacterData {
 export async function loadCharacterPNGs(): Promise<boolean> {
   try {
     const characters: LoadedCharacterData[] = []
-    const baseCharacterCount = 6
-    const maxCharacterCount = 64
+    const bundledCharacterCount = 9
     const CHARACTER_SHEET_WIDTH = 112
     const CHARACTER_SHEET_HEIGHT = 96
 
-    for (let i = 0; i < baseCharacterCount; i++) {
+    for (let i = 0; i < bundledCharacterCount; i++) {
       const img = await loadImage(`/assets/pixel-office/characters/char_${i}.png`)
       const sheet = stripOpaqueSheetBackground(normalizedSpriteData(img, CHARACTER_SHEET_WIDTH, CHARACTER_SHEET_HEIGHT))
       characters.push(parseCharacterSheet(sheet))
-    }
-
-    for (let i = baseCharacterCount; i < maxCharacterCount; i++) {
-      try {
-        const img = await loadImage(`/assets/pixel-office/characters/char_${i}.png`)
-        const sheet = stripOpaqueSheetBackground(normalizedSpriteData(img, CHARACTER_SHEET_WIDTH, CHARACTER_SHEET_HEIGHT))
-        characters.push(parseCharacterSheet(sheet))
-      } catch {
-        break
-      }
     }
 
     setCharacterTemplates(characters)
