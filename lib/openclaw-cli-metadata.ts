@@ -89,7 +89,7 @@ function collectSection(lines: string[], header: string): string[] {
   return section;
 }
 
-function inferRiskTier(commandPath: string[]): CliRiskTier {
+export function inferRiskTier(commandPath: string[]): CliRiskTier {
   const path = commandPath.join(" ");
   if (/(^| )(reset|uninstall)( |$)/.test(path)) return "dangerous";
   if (/(^| )(message send|message broadcast|cron add|cron edit|cron rm|cron run|gateway restart|gateway start|gateway stop|gateway install|gateway uninstall)( |$)/.test(path)) {
@@ -97,6 +97,11 @@ function inferRiskTier(commandPath: string[]): CliRiskTier {
   }
   if (/(^| )(models status|doctor|gateway probe)( |$)/.test(path)) return "active_local";
   return "read_only";
+}
+
+export function inferRiskTierFromArgs(args: string[]): CliRiskTier {
+  const commandPath = args.filter((arg) => !arg.startsWith("--") && !arg.startsWith("-"));
+  return inferRiskTier(commandPath);
 }
 
 function timeoutForRisk(riskTier: CliRiskTier): number {

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
+import { isTrustedSameOriginRequest } from '@/lib/dashboard-access'
 import { OPENCLAW_PIXEL_OFFICE_DIR } from '@/lib/openclaw-paths'
 import { getFeatureFlags } from '@/lib/feature-flags'
 
@@ -23,6 +24,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!isTrustedSameOriginRequest(request)) {
+      return NextResponse.json({ error: "Cross-origin layout writes are not allowed." }, { status: 403 })
+    }
     if (!getFeatureFlags().enableLayoutWrite) {
       return NextResponse.json({ error: "Layout write access is disabled.", disabled: true, scope: "local-write" }, { status: 403 })
     }

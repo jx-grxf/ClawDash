@@ -81,6 +81,23 @@ export function shouldChallengeWithBasicAuth(): boolean {
   return Boolean(config.basicAuthUser || config.basicAuthPassword);
 }
 
+export function isTrustedSameOriginRequest(request: Request): boolean {
+  const originHeader = request.headers.get("origin");
+  const secFetchSite = (request.headers.get("sec-fetch-site") || "").toLowerCase();
+  const url = new URL(request.url);
+
+  if (originHeader) {
+    try {
+      return new URL(originHeader).origin === url.origin;
+    } catch {
+      return false;
+    }
+  }
+
+  if (secFetchSite === "cross-site") return false;
+  return true;
+}
+
 export function maskSensitiveValue(value: string, visiblePrefix = 4, visibleSuffix = 3): string {
   const compact = value.trim();
   if (!compact) return "";

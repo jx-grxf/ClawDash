@@ -101,6 +101,10 @@ export function getSettingsPath(): string {
   return CLAWDASH_SETTINGS_PATH;
 }
 
+export function getSettingsDisplayPath(): string {
+  return path.join("~", ".openclaw", "clawdash", "settings.json");
+}
+
 export function getDefaultSettings(): ClawDashSettings {
   return buildDefaults();
 }

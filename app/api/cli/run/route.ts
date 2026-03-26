@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { isTrustedSameOriginRequest } from "@/lib/dashboard-access";
 import { runOpenclaw } from "@/lib/openclaw-cli";
-import { type CliRiskTier, sanitizeCliArgs } from "@/lib/openclaw-cli-metadata";
+import { inferRiskTierFromArgs, type CliRiskTier, sanitizeCliArgs } from "@/lib/openclaw-cli-metadata";
 
 const RISK_TIMEOUT_MS: Record<CliRiskTier, number> = {
   read_only: 10_000,
@@ -12,13 +13,16 @@ const RISK_TIMEOUT_MS: Record<CliRiskTier, number> = {
 
 export async function POST(request: Request) {
   try {
+    if (!isTrustedSameOriginRequest(request)) {
+      return NextResponse.json({ error: "Cross-origin CLI execution is not allowed." }, { status: 403 });
+    }
     const body = await request.json() as {
       args?: unknown;
       riskTier?: CliRiskTier;
       confirmed?: boolean;
     };
     const args = sanitizeCliArgs(body.args);
-    const riskTier = body.riskTier || "read_only";
+    const riskTier = inferRiskTierFromArgs(args);
     const needsConfirmation = riskTier === "state_mutating" || riskTier === "external_side_effect" || riskTier === "dangerous";
 
     if (needsConfirmation && body.confirmed !== true) {
@@ -44,4 +48,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }
-
