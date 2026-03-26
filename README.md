@@ -22,19 +22,19 @@ It is built for personal, self-hosted, and trusted operator setups, not as a hos
 
 ## Contents
 
-- [Highlights](#-highlights)
-- [Scope](#-scope)
-- [Tech Stack](#-tech-stack)
-- [Requirements](#-requirements)
-- [Quick Start](#-quick-start)
-- [Features](#-features)
-- [Configuration](#-configuration)
-- [Settings](#-settings)
-- [Security](#-security)
-- [Architecture](#-architecture)
-- [API Classification](#-api-classification)
-- [Roadmap Notes](#-roadmap-notes)
-- [License](#-license)
+- [Highlights](#highlights)
+- [Scope](#scope)
+- [Tech Stack](#tech-stack)
+- [Requirements](#requirements)
+- [Quick Start](#quick-start)
+- [Features](#features)
+- [Configuration](#configuration)
+- [Settings](#settings)
+- [Security](#security)
+- [Architecture](#architecture)
+- [API Classification](#api-classification)
+- [Roadmap Notes](#roadmap-notes)
+- [License](#license)
 
 ---
 
