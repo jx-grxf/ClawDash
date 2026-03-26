@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { maskSensitiveValue } from "@/lib/dashboard-access";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { getFeatureFlags } from "@/lib/feature-flags";
 import { resolveGatewayEndpoints } from "@/lib/gateway-url";
 import { readSessionItems } from "@/lib/openclaw-domain";
 import { OPENCLAW_CONFIG_PATH, OPENCLAW_HOME } from "@/lib/openclaw-paths";
@@ -178,14 +178,14 @@ function readDashboardConfig(): DashboardConfig {
 }
 
 function maybeMask(value: string): string {
-  return FEATURE_FLAGS.enablePrivacyMode ? maskSensitiveValue(value) : value;
+  return getFeatureFlags().enablePrivacyMode ? maskSensitiveValue(value) : value;
 }
 
 function summarizeText(value: string | undefined, maxLength = 96): string | undefined {
   if (!value) return undefined;
   const compact = value.replace(/\s+/g, " ").trim();
   if (!compact) return undefined;
-  const masked = FEATURE_FLAGS.enablePrivacyMode ? maskSensitiveValue(compact, 8, 0) : compact;
+  const masked = getFeatureFlags().enablePrivacyMode ? maskSensitiveValue(compact, 8, 0) : compact;
   return masked.length > maxLength ? `${masked.slice(0, maxLength - 1)}...` : masked;
 }
 

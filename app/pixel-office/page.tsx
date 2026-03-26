@@ -20,7 +20,6 @@ import { TileType, EditTool } from '@/lib/pixel-office/types'
 import type { TileType as TileTypeVal, FloorColor, OfficeLayout } from '@/lib/pixel-office/types'
 import { getCatalogEntry, isRotatable } from '@/lib/pixel-office/layout/furnitureCatalog'
 import { createDefaultLayout, migrateLayoutColors, serializeLayout } from '@/lib/pixel-office/layout/layoutSerializer'
-import { FEATURE_FLAGS } from '@/lib/feature-flags'
 import {
   playDoneSound,
   playBackgroundMusic,
@@ -196,8 +195,6 @@ const CODE_SNIPPET_LIFETIME_SEC = 5.5
 const SRE_BLACKWORD_MAX_FLOAT_DIST_PX = 320
 const FLOATING_TICK_INTERVAL_DESKTOP_MS = 48
 const FLOATING_TICK_INTERVAL_MOBILE_MS = 32
-const AGENT_ACTIVITY_POLL_INTERVAL_MS = 1000
-const GATEWAY_HEALTH_POLL_INTERVAL_MS = 10000
 const GATEWAY_DEGRADED_LATENCY_MS = 1500
 const GATEWAY_SRE_DOWN_FAIL_THRESHOLD = 2
 const GATEWAY_SRE_DEGRADED_THRESHOLD = 2
@@ -216,8 +213,11 @@ let cachedPrevAgentStates = new Map<string, string>()
 
 export default function PixelOfficePage() {
   const { t, locale } = useI18n()
-  const layoutWriteEnabled = FEATURE_FLAGS.enableLayoutWrite
-  const externalFetchesEnabled = FEATURE_FLAGS.enableExternalFetches
+  const [layoutWriteEnabled, setLayoutWriteEnabled] = useState(false)
+  const [externalFetchesEnabled, setExternalFetchesEnabled] = useState(false)
+  const [agentPollIntervalMs, setAgentPollIntervalMs] = useState(1000)
+  const [statsPollIntervalMs, setStatsPollIntervalMs] = useState(30000)
+  const [gatewayPollIntervalMs, setGatewayPollIntervalMs] = useState(10000)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const officeRef = useRef<OfficeState | null>(null)
@@ -285,6 +285,30 @@ export default function PixelOfficePage() {
   const [floatingTick, setFloatingTick] = useState(0)
   const [isMobileViewport, setIsMobileViewport] = useState(false)
   const forceEditorUpdate = useCallback(() => setEditorTick(t => t + 1), [])
+
+  useEffect(() => {
+    let active = true
+    void fetch('/api/settings', { cache: 'no-store' })
+      .then((response) => response.json())
+      .then((payload) => {
+        if (!active) return
+        const flags = payload?.settings?.featureFlags
+        const runtime = payload?.settings?.runtime
+        if (flags) {
+          setLayoutWriteEnabled(Boolean(flags.enableLayoutWrite))
+          setExternalFetchesEnabled(Boolean(flags.enableExternalFetches))
+        }
+        if (runtime) {
+          if (typeof runtime.pixelOfficeAgentPollIntervalMs === 'number') setAgentPollIntervalMs(runtime.pixelOfficeAgentPollIntervalMs)
+          if (typeof runtime.pixelOfficeStatsPollIntervalMs === 'number') setStatsPollIntervalMs(runtime.pixelOfficeStatsPollIntervalMs)
+          if (typeof runtime.gatewayPollIntervalMs === 'number') setGatewayPollIntervalMs(runtime.gatewayPollIntervalMs)
+        }
+      })
+      .catch(() => {})
+    return () => {
+      active = false
+    }
+  }, [])
 
   const fetchVersionInfo = useCallback(async (forceLatest = false) => {
     setVersionLoading(true)
@@ -838,9 +862,9 @@ export default function PixelOfficePage() {
       }
     }
     fetchAgents()
-    const interval = setInterval(fetchAgents, AGENT_ACTIVITY_POLL_INTERVAL_MS)
+    const interval = setInterval(fetchAgents, agentPollIntervalMs)
     return () => clearInterval(interval)
-  }, [])
+  }, [agentPollIntervalMs, t])
 
   // Poll agent session stats from /api/config
   useEffect(() => {
@@ -887,16 +911,16 @@ export default function PixelOfficePage() {
       } catch {}
     }
     fetchStats()
-    const interval = setInterval(fetchStats, 30000)
+    const interval = setInterval(fetchStats, statsPollIntervalMs)
     return () => clearInterval(interval)
-  }, [])
+  }, [statsPollIntervalMs])
 
   // Poll gateway health for server alarm lamp in Pixel Office
   useEffect(() => {
     void refreshGatewayHealthSnapshot()
-    const interval = setInterval(refreshGatewayHealthSnapshot, GATEWAY_HEALTH_POLL_INTERVAL_MS)
+    const interval = setInterval(refreshGatewayHealthSnapshot, gatewayPollIntervalMs)
     return () => clearInterval(interval)
-  }, [refreshGatewayHealthSnapshot])
+  }, [gatewayPollIntervalMs, refreshGatewayHealthSnapshot])
 
   useEffect(() => {
     if (!selectedAgentId) return

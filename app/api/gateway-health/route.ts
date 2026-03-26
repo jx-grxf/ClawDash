@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { execOpenclaw, parseJsonFromMixedOutput } from "@/lib/openclaw-cli";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { getFeatureFlags } from "@/lib/feature-flags";
 import { resolveGatewayEndpoints } from "@/lib/gateway-url";
 import { getDashboardData } from "@/lib/openclaw-dashboard";
 import type { GatewayHealthSummary } from "@/lib/openclaw-types";
@@ -11,6 +11,7 @@ interface GatewayStatusPayload {
 }
 
 export async function GET() {
+  const featureFlags = getFeatureFlags();
   const startedAt = Date.now();
   const data = getDashboardData();
   const endpoints = resolveGatewayEndpoints({
@@ -20,7 +21,7 @@ export async function GET() {
     webUrl: data.gateway.publicUrl,
   });
 
-  if (!FEATURE_FLAGS.enableActiveChecks) {
+  if (!featureFlags.enableActiveChecks) {
     return NextResponse.json<GatewayHealthSummary>({
       ok: true,
       status: "healthy",
@@ -60,13 +61,13 @@ export async function GET() {
       localUrl: endpoints.localUrl,
       publicUrl: endpoints.publicUrl,
       healthSource: endpoints.source,
-      error: ok ? undefined : "Gateway antwortet nicht sauber.",
+      error: ok ? undefined : "Gateway did not respond cleanly.",
     };
 
     return NextResponse.json(result);
   } catch (error: unknown) {
     const checkedAt = Date.now();
-    const message = error instanceof Error ? error.message : "Gateway-Check fehlgeschlagen.";
+    const message = error instanceof Error ? error.message : "Gateway check failed.";
     return NextResponse.json<GatewayHealthSummary>({
       ok: false,
       status: "down",

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { execSync } from "child_process";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { getFeatureFlags } from "@/lib/feature-flags";
 import { createCacheEntry, getCachedData, type CacheEntry } from "@/lib/server-cache";
 
 // 24 小时内存缓存
@@ -23,7 +23,7 @@ function getGitHubUsername(): string | null {
 const LEVEL_TO_COUNT = [0, 2, 5, 8, 12];
 
 async function fetchContributions(username: string) {
-  if (!FEATURE_FLAGS.enableExternalFetches) {
+  if (!getFeatureFlags().enableExternalFetches) {
     return { weeks: [], username: "", disabled: true };
   }
   const controller = new AbortController();
@@ -74,7 +74,7 @@ export async function GET() {
     return NextResponse.json(cached);
   }
 
-  if (!FEATURE_FLAGS.enableExternalFetches) {
+  if (!getFeatureFlags().enableExternalFetches) {
     const data = { weeks: [], username: "", disabled: true };
     cache = { data, ts: Date.now() };
     return NextResponse.json(data);

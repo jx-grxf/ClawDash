@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { getFeatureFlags } from "@/lib/feature-flags";
 import { execOpenclaw } from "@/lib/openclaw-cli";
 import { createCacheEntry, getCachedData, type CacheEntry } from "@/lib/server-cache";
 
@@ -12,7 +12,7 @@ const CACHE_TTL = 60 * 60 * 1000;
 const REVALIDATE_SECONDS = 60 * 60;
 
 async function fetchLatestRelease(forceLatest = false) {
-  if (!FEATURE_FLAGS.enableExternalFetches) {
+  if (!getFeatureFlags().enableExternalFetches) {
     const { stdout } = await execOpenclaw(["--version"]);
     return {
       tag: stdout.trim() || "local",

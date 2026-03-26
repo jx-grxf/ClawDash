@@ -2,27 +2,28 @@ import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import { OPENCLAW_PIXEL_OFFICE_DIR } from '@/lib/openclaw-paths'
-import { FEATURE_FLAGS } from '@/lib/feature-flags'
+import { getFeatureFlags } from '@/lib/feature-flags'
 
 const LAYOUT_DIR = OPENCLAW_PIXEL_OFFICE_DIR
 const LAYOUT_FILE = path.join(LAYOUT_DIR, 'layout.json')
 
 export async function GET() {
+  const featureFlags = getFeatureFlags()
   try {
     if (!fs.existsSync(LAYOUT_FILE)) {
-      return NextResponse.json({ layout: null, writable: FEATURE_FLAGS.enableLayoutWrite })
+      return NextResponse.json({ layout: null, writable: featureFlags.enableLayoutWrite })
     }
     const data = fs.readFileSync(LAYOUT_FILE, 'utf-8')
     const layout = JSON.parse(data)
-    return NextResponse.json({ layout, writable: FEATURE_FLAGS.enableLayoutWrite })
+    return NextResponse.json({ layout, writable: featureFlags.enableLayoutWrite })
   } catch {
-    return NextResponse.json({ layout: null, writable: FEATURE_FLAGS.enableLayoutWrite })
+    return NextResponse.json({ layout: null, writable: featureFlags.enableLayoutWrite })
   }
 }
 
 export async function POST(request: Request) {
   try {
-    if (!FEATURE_FLAGS.enableLayoutWrite) {
+    if (!getFeatureFlags().enableLayoutWrite) {
       return NextResponse.json({ error: "Layout write access is disabled.", disabled: true, scope: "local-write" }, { status: 403 })
     }
     const { layout } = await request.json()

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: "◫" },
   { href: "/operator", label: "Operator", icon: "⌁" },
+  { href: "/settings", label: "Settings", icon: "⚙" },
   { href: "/cli", label: "CLI", icon: ">_" },
   { href: "/pixel-office", label: "Pixel Office", icon: "⌘" },
   { href: "/models", label: "Models", icon: "◇" },

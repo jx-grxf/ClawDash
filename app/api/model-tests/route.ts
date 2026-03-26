@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { execOpenclaw, parseJsonFromMixedOutput } from "@/lib/openclaw-cli";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { getFeatureFlags } from "@/lib/feature-flags";
 import type { ModelProbeResult, ModelProbeSummary } from "@/lib/openclaw-types";
 
 interface ProbePayload {
@@ -54,7 +54,7 @@ function normalizeResult(result: ProbeEntry): ModelProbeResult | null {
 
 export async function GET() {
   try {
-    if (!FEATURE_FLAGS.enableActiveModelTests) {
+    if (!getFeatureFlags().enableActiveModelTests) {
       return NextResponse.json({ error: "Active model tests are disabled in ClawDash.", disabled: true, scope: "active-check" }, { status: 403 });
     }
     const { stdout, stderr } = await execOpenclaw(["models", "status", "--probe", "--json", "--probe-timeout", "3000"]);

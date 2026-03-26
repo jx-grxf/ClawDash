@@ -1,9 +1,10 @@
 import { LiveModelTests } from "@/app/components/live-model-tests";
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
+import { getFeatureFlags } from "@/lib/feature-flags";
 import { getDashboardData } from "@/lib/openclaw-dashboard";
 
 export default function ModelsPage() {
   const data = getDashboardData();
+  const featureFlags = getFeatureFlags();
 
   return (
     <main className="space-y-6">
@@ -35,7 +36,7 @@ export default function ModelsPage() {
         ))}
       </section>
 
-      <LiveModelTests enabled={FEATURE_FLAGS.enableActiveModelTests} />
+      <LiveModelTests enabled={featureFlags.enableActiveModelTests} />
     </main>
   );
 }

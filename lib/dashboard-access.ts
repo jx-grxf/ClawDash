@@ -1,8 +1,15 @@
-import { FEATURE_FLAGS } from "@/lib/feature-flags";
-
 function trimEnv(name: string): string {
   const value = process.env[name];
   return typeof value === "string" ? value.trim() : "";
+}
+
+function parseBool(value: string | undefined, fallback = false): boolean {
+  if (typeof value !== "string") return fallback;
+  const normalized = value.trim().toLowerCase();
+  if (!normalized) return fallback;
+  if (["1", "true", "yes", "on"].includes(normalized)) return true;
+  if (["0", "false", "no", "off"].includes(normalized)) return false;
+  return fallback;
 }
 
 function decodeBasicAuth(header: string | null): { username: string; password: string } | null {
@@ -22,8 +29,8 @@ function decodeBasicAuth(header: string | null): { username: string; password: s
 
 export function getDashboardAccessConfig() {
   return {
-    localOnly: FEATURE_FLAGS.enableLocalOnlyAccess,
-    privacyMode: FEATURE_FLAGS.enablePrivacyMode,
+    localOnly: parseBool(process.env.NEXT_PUBLIC_CLAWDASH_LOCAL_ONLY ?? process.env.CLAWDASH_LOCAL_ONLY, false),
+    privacyMode: parseBool(process.env.NEXT_PUBLIC_CLAWDASH_ENABLE_PRIVACY_MODE ?? process.env.CLAWDASH_ENABLE_PRIVACY_MODE, false),
     accessToken: trimEnv("CLAWDASH_ACCESS_TOKEN"),
     basicAuthUser: trimEnv("CLAWDASH_BASIC_AUTH_USER"),
     basicAuthPassword: trimEnv("CLAWDASH_BASIC_AUTH_PASSWORD"),
