@@ -1,6 +1,6 @@
 <div align="center">
 
-# ClawDash
+# 🦞 ClawDash
 
 **Operator-focused local dashboard for OpenClaw**
 
