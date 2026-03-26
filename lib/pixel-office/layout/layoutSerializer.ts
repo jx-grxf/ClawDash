@@ -466,7 +466,7 @@ const INTERACTABLE_TYPES = new Set([
   FurnitureType.COOLER, FurnitureType.WATER_COOLER,
   FurnitureType.BOOKSHELF, FurnitureType.LIBRARY_GRAY_FULL,
   FurnitureType.WHITEBOARD, FurnitureType.FRIDGE,
-  FurnitureType.DECO_3,
+  FurnitureType.DECO_3, FurnitureType.SOFA,
 ])
 
 /** Get interaction points adjacent to interactable furniture */

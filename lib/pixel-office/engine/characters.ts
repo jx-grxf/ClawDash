@@ -149,6 +149,12 @@ export function updateCharacter(
       // No idle animation — static pose
       ch.frame = 0
       if (ch.seatTimer < 0) ch.seatTimer = 0 // clear turn-end sentinel
+      if (!ch.isActive && ch.zonePreference === 'lounge') {
+        ch.path = []
+        ch.moveProgress = 0
+        ch.wanderTimer = 60
+        break
+      }
       // If became active, pathfind to seat
       if (ch.isActive) {
         if (!ch.seatId) {
