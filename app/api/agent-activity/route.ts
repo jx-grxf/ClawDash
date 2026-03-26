@@ -18,6 +18,7 @@ import { OPENCLAW_AGENTS_DIR, OPENCLAW_CONFIG_PATH, OPENCLAW_HOME } from '@/lib/
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+const HIDDEN_AGENT_IDS = new Set(['codex'])
 const SESSION_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000
 const MAX_PARENT_SESSIONS_TO_PARSE = 40
 const ORPHAN_FALLBACK_WINDOW_MS = 15 * 60 * 1000
@@ -62,7 +63,9 @@ async function loadAgentList(config: any, agentsDir: string): Promise<AgentConfi
   const configured = Array.isArray(config?.agents?.list)
     ? config.agents.list.filter((agent: any) => agent && typeof agent.id === 'string' && agent.id)
     : []
-  if (configured.length > 0) return configured
+  if (configured.length > 0) {
+    return configured.filter((agent: AgentConfigEntry) => !HIDDEN_AGENT_IDS.has(agent.id))
+  }
 
   try {
     if (!existsSync(agentsDir)) return []
@@ -70,9 +73,30 @@ async function loadAgentList(config: any, agentsDir: string): Promise<AgentConfi
     return dirs
       .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
       .map((entry) => ({ id: entry.name }))
+      .filter((agent) => !HIDDEN_AGENT_IDS.has(agent.id))
   } catch {
     return []
   }
+}
+
+async function readIdentityName(agentId: string): Promise<string | null> {
+  const candidates = [
+    path.join(OPENCLAW_HOME, 'agents', agentId, 'agent', 'IDENTITY.md'),
+    path.join(OPENCLAW_HOME, `workspace-${agentId}`, 'IDENTITY.md'),
+    agentId === 'main' ? path.join(OPENCLAW_HOME, 'workspace', 'IDENTITY.md') : '',
+  ].filter(Boolean)
+
+  for (const candidate of candidates) {
+    try {
+      const content = await fs.readFile(candidate, 'utf8')
+      const match = content.match(/\*\*Name:\*\*\s*(.+)/)
+      if (match?.[1]?.trim()) return match[1].trim()
+    } catch {
+      // Ignore
+    }
+  }
+
+  return null
 }
 
 function isSubtaskDescription(desc: string): boolean {
@@ -753,7 +777,7 @@ export async function GET() {
 
           agents.push({
             agentId: agent.id,
-            name: agent.name || agent.id,
+            name: agent.name || await readIdentityName(agent.id) || agent.id,
             emoji: agent.identity?.emoji || agent.emoji || '🤖',
             state,
             lastActive,

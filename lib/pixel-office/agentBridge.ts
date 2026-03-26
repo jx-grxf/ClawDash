@@ -44,18 +44,6 @@ export function syncAgentsToOffice(
   }
 
   for (const activity of activities) {
-    if (activity.state === 'offline') {
-      if (agentIdMap.has(activity.agentId)) {
-        const charId = agentIdMap.get(activity.agentId)!
-        office.removeAllSubagents(charId)
-        office.removeAgent(charId)
-        agentIdMap.delete(activity.agentId)
-        prevSubagentKeys.delete(activity.agentId)
-      }
-      prevAgentStates.set(activity.agentId, 'offline')
-      continue
-    }
-
     let charId = agentIdMap.get(activity.agentId)
     if (charId !== undefined && !office.characters.has(charId)) {
       agentIdMap.delete(activity.agentId)
@@ -92,11 +80,15 @@ export function syncAgentsToOffice(
         office.setAgentActive(charId, true)
         office.showWaitingBubble(charId)
         break
+      case 'offline':
+        office.setAgentActive(charId, false)
+        office.setAgentTool(charId, null)
+        break
     }
 
     // Sync subagents
     const currentSubKeys = new Set<string>()
-    if (activity.subagents) {
+    if (activity.state !== 'offline' && activity.subagents) {
       for (const sub of activity.subagents) {
         const subKey = sub.sessionKey ? `${sub.sessionKey}::${sub.toolId}` : sub.toolId
         currentSubKeys.add(subKey)
