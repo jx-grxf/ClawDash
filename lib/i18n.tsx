@@ -1,0 +1,62 @@
+"use client";
+
+const translations: Record<string, string> = {
+  "common.loading": "Lädt...",
+  "common.loadError": "Fehler beim Laden",
+  "common.noData": "Keine Daten",
+  "common.close": "Schließen",
+  "agent.sessionCount": "Sessions",
+  "agent.messageCount": "Nachrichten",
+  "agent.tokenUsage": "Token",
+  "agent.todayAvgResponse": "Antwortzeit",
+  "platform.feishu": "Feishu",
+  "platform.discord": "Discord",
+  "platform.telegram": "Telegram",
+  "platform.whatsapp": "WhatsApp",
+  "platform.qqbot": "QQBot",
+  "platform.wecom": "WeCom",
+  "platform.yuanbao": "Yuanbao",
+  "models.title": "Modelle",
+  "pixelOffice.title": "Pixel Office",
+  "pixelOffice.sound": "Sound",
+  "pixelOffice.exitEdit": "Edit beenden",
+  "pixelOffice.editMode": "Edit Mode",
+  "pixelOffice.resetView": "Ansicht zurücksetzen",
+  "pixelOffice.undo": "Undo",
+  "pixelOffice.redo": "Redo",
+  "pixelOffice.save": "Speichern",
+  "pixelOffice.reset": "Reset",
+  "pixelOffice.tempWorker": "Temp Worker",
+  "pixelOffice.tempWorker.createdBy": "erstellt von",
+  "pixelOffice.tempWorker.source": "Quelle",
+  "pixelOffice.state.working": "Working",
+  "pixelOffice.state.idle": "Idle",
+  "pixelOffice.state.offline": "Offline",
+  "pixelOffice.state.waiting": "Waiting",
+  "pixelOffice.broadcast.online": "ist online",
+  "pixelOffice.broadcast.offline": "ist offline",
+  "pixelOffice.heatmap.title": "Heatmap",
+  "pixelOffice.heatmap.messages": "Nachrichten",
+  "pixelOffice.idleRank.title": "Idle Rank",
+  "pixelOffice.idleRank.online": "Online",
+  "pixelOffice.idleRank.active": "Aktiv",
+  "pixelOffice.idleRank.idle": "Idle",
+  "pixelOffice.gatewaySre.name": "Gateway",
+  "pixelOffice.gatewaySre.statusLabel": "Status",
+  "pixelOffice.gatewaySre.responseMs": "Antwortzeit",
+  "pixelOffice.gatewaySre.status.healthy": "Healthy",
+  "pixelOffice.gatewaySre.status.degraded": "Degraded",
+  "pixelOffice.gatewaySre.status.down": "Down",
+  "pixelOffice.serverStatus.healthy": "Healthy",
+  "pixelOffice.serverStatus.degraded": "Degraded",
+  "pixelOffice.serverStatus.down": "Down",
+};
+
+export type Locale = "de";
+
+export function useI18n() {
+  return {
+    locale: "de" as Locale,
+    t: (key: string) => translations[key] || key,
+  };
+}

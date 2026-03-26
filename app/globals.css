@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0b1120;
+  --bg-elevated: #111827;
+  --card: #172033;
+  --card-strong: #1b263b;
+  --panel: rgba(15, 23, 42, 0.92);
+  --border: #263247;
+  --text: #ecf3ff;
+  --text-muted: #93a4bd;
+  --accent: #53c3f0;
+  --accent-soft: rgba(83, 195, 240, 0.14);
+  --success: #4ade80;
+  --danger: #f87171;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, rgba(83, 195, 240, 0.15), transparent 24%),
+    radial-gradient(circle at top right, rgba(129, 140, 248, 0.12), transparent 20%),
+    linear-gradient(180deg, #0b1120 0%, #0f172a 100%);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.sidebar-shell {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(11, 17, 32, 0.98));
+  border-right: 1px solid var(--border);
+}
+
+.app-main {
+  background: transparent;
+}
