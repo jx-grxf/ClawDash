@@ -2,6 +2,8 @@ import { LiveModelTests } from "@/app/components/live-model-tests";
 import { getFeatureFlags } from "@/lib/feature-flags";
 import { getDashboardData } from "@/lib/openclaw-dashboard";
 
+export const dynamic = "force-dynamic";
+
 export default function ModelsPage() {
   const data = getDashboardData();
   const featureFlags = getFeatureFlags();

@@ -174,7 +174,7 @@ function getPlatformNames(agentId: string, config: DashboardConfig): string[] {
 }
 
 function readDashboardConfig(): DashboardConfig {
-  return readJsonFile<DashboardConfig>(OPENCLAW_CONFIG_PATH);
+  return safeReadJsonFile<DashboardConfig>(OPENCLAW_CONFIG_PATH) || {};
 }
 
 function maybeMask(value: string): string {

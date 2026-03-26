@@ -2,6 +2,8 @@ import Link from "next/link";
 import { StatsChart } from "@/app/components/stats-chart";
 import { getAllStats, getDashboardData, getStatsForAgent } from "@/lib/openclaw-dashboard";
 
+export const dynamic = "force-dynamic";
+
 function formatTokens(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
   if (value >= 1_000) return `${(value / 1_000).toFixed(1)}k`;

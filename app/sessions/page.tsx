@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getAgentSessions, getDashboardData } from "@/lib/openclaw-dashboard";
 import type { SessionTransport } from "@/lib/openclaw-types";
 
+export const dynamic = "force-dynamic";
+
 function formatTime(timestamp: number | null | undefined): string {
   if (!timestamp) return "-";
   return new Date(timestamp).toLocaleString("de-AT");
