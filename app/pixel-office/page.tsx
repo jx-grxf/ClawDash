@@ -53,6 +53,29 @@ function formatMs(ms: number): string {
   return (ms / 1000).toFixed(1) + 's'
 }
 
+function normalizeActivitySignature(agents: AgentActivity[]): string {
+  return JSON.stringify(
+    agents.map((agent) => ({
+      agentId: agent.agentId,
+      state: agent.state,
+      lastActive: agent.lastActive,
+      currentTool: agent.currentTool || '',
+      toolStatus: agent.toolStatus || '',
+      subagents: (agent.subagents || []).map((sub) => ({
+        toolId: sub.toolId,
+        label: sub.label,
+        sessionKey: sub.sessionKey || '',
+        childSessionKey: sub.childSessionKey || '',
+        activityEvents: (sub.activityEvents || []).map((event) => ({
+          key: event.key,
+          at: event.at,
+          text: event.text,
+        })),
+      })),
+    })),
+  )
+}
+
 type ReleaseInfo = {
   tag: string
   name: string
@@ -207,6 +230,7 @@ let cachedPan: { x: number; y: number } = { x: 0, y: 0 }
 let cachedIsEditMode = false
 let spriteAssetsPromise: Promise<void> | null = null
 let cachedAgents: AgentActivity[] = []
+let cachedAgentSignature = ''
 let cachedAgentIdMap = new Map<string, number>()
 let cachedNextCharacterId = 1
 let cachedPrevAgentStates = new Map<string, string>()
@@ -282,7 +306,6 @@ export default function PixelOfficePage() {
   const floatingCommentsRef = useRef<Array<{ key: string; text: string; x: number; y: number; opacity: number }>>([])
   const floatingCodeRef = useRef<Array<{ key: string; text: string; x: number; y: number; opacity: number; kind?: 'default' | 'sre' }>>([])
   const floatingTickUpdatedAtRef = useRef<number>(0)
-  const [floatingTick, setFloatingTick] = useState(0)
   const [isMobileViewport, setIsMobileViewport] = useState(false)
   const forceEditorUpdate = useCallback(() => setEditorTick(t => t + 1), [])
 
@@ -714,7 +737,6 @@ export default function PixelOfficePage() {
           : 180
         if (now - floatingTickUpdatedAtRef.current >= tickInterval) {
           floatingTickUpdatedAtRef.current = now
-          setFloatingTick(t => t + 1)
         }
       }
       animationFrameIdRef.current = requestAnimationFrame(render)
@@ -788,8 +810,13 @@ export default function PixelOfficePage() {
         const res = await fetch('/api/agent-activity', { cache: 'no-store' })
         const data = await res.json()
         const newAgents: AgentActivity[] = data.agents || []
-        setAgents(newAgents)
-        cachedAgents = newAgents
+        const nextSignature = normalizeActivitySignature(newAgents)
+        const changed = nextSignature !== cachedAgentSignature
+        if (changed) {
+          setAgents(newAgents)
+          cachedAgents = newAgents
+          cachedAgentSignature = nextSignature
+        }
 
         const office = officeRef.current
         if (office && officeReadyRef.current) {

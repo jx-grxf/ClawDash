@@ -59,8 +59,8 @@ function defaultFeatureFlags(): FeatureFlags {
 function defaultRuntimeSettings(): RuntimeSettings {
   return {
     gatewayPollIntervalMs: 10_000,
-    pixelOfficeAgentPollIntervalMs: 1_000,
-    pixelOfficeStatsPollIntervalMs: 30_000,
+    pixelOfficeAgentPollIntervalMs: 2_500,
+    pixelOfficeStatsPollIntervalMs: 45_000,
   };
 }
 
