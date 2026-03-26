@@ -7,6 +7,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![CI](https://img.shields.io/github/actions/workflow/status/jx-grxf/ClawDash/ci.yml?branch=main&label=CI)
 ![OpenClaw](https://img.shields.io/badge/OpenClaw-local%20ops-0F766E)
 ![Pixel Office](https://img.shields.io/badge/Pixel%20Office-live%20view-D97706)
 ![License](https://img.shields.io/badge/license-MIT-green)
