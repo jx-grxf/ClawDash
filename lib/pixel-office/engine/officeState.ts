@@ -1424,6 +1424,17 @@ export class OfficeState {
     const ch = this.characters.get(id)
     if (!ch || ch.isCat || ch.isLobster || ch.isSystemRole) return
 
+    const sameZone = ch.zonePreference === zone
+    const isAlreadySettledInLounge =
+      zone === 'lounge' &&
+      !ch.isActive &&
+      ch.state === CharacterState.IDLE &&
+      ch.path.length === 0
+    const isAlreadyMovingWithinZone =
+      sameZone &&
+      (ch.path.length > 0 || (!ch.isActive && ch.state === CharacterState.WALK))
+    if (isAlreadySettledInLounge || isAlreadyMovingWithinZone) return
+
     ch.zonePreference = zone
     ch.path = []
     ch.moveProgress = 0
