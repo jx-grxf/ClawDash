@@ -1843,7 +1843,7 @@ export default function PixelOfficePage() {
         )}
         {!layoutWriteEnabled && officeReady ? (
           <div className="absolute left-3 top-3 z-20 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100 backdrop-blur-sm">
-            Layout ist read-only. Schreibzugriffe sind per Feature-Flag deaktiviert.
+            Layout is read-only. Write access is disabled by feature flag.
           </div>
         ) : null}
 

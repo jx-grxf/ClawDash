@@ -6,8 +6,8 @@ import type { GatewayHealthSummary } from "@/lib/openclaw-types";
 const POLL_MS = 10000;
 
 function statusLabel(status: GatewayHealthSummary["status"]): string {
-  if (status === "healthy") return "gesund";
-  if (status === "degraded") return "langsam";
+  if (status === "healthy") return "healthy";
+  if (status === "degraded") return "degraded";
   return "down";
 }
 
@@ -37,6 +37,7 @@ export function LiveGatewayCard() {
             checkedAt: Date.now(),
             responseMs: 0,
             error: "Gateway-Check fehlgeschlagen.",
+            
           });
         }
       } finally {
@@ -57,10 +58,10 @@ export function LiveGatewayCard() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold">Live Gateway</h2>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">wird alle 10 Sekunden neu geprüft</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">re-checked every 10 seconds</p>
         </div>
         <span className={`rounded-full border px-3 py-1 text-xs ${statusClasses(data?.status || "down")}`}>
-          {loading ? "prüft..." : statusLabel(data?.status || "down")}
+          {loading ? "checking..." : statusLabel(data?.status || "down")}
         </span>
       </div>
       <dl className="mt-4 space-y-3 text-sm">
@@ -73,7 +74,7 @@ export function LiveGatewayCard() {
           <dd>{data?.port || "-"}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-[var(--text-muted)]">Antwortzeit</dt>
+          <dt className="text-[var(--text-muted)]">Response time</dt>
           <dd>{data?.responseMs ? `${data.responseMs} ms` : "-"}</dd>
         </div>
         <div className="flex justify-between gap-4">
@@ -85,7 +86,7 @@ export function LiveGatewayCard() {
           <dd className="truncate text-right">{data?.publicUrl || "-"}</dd>
         </div>
         <div className="flex justify-between gap-4">
-          <dt className="text-[var(--text-muted)]">Health-Quelle</dt>
+          <dt className="text-[var(--text-muted)]">Health source</dt>
           <dd>{data?.healthSource || "-"}</dd>
         </div>
       </dl>

@@ -33,7 +33,7 @@ export async function GET() {
       localUrl: endpoints.localUrl,
       publicUrl: endpoints.publicUrl,
       healthSource: endpoints.source,
-      error: "Aktive Gateway-Checks sind per Feature-Flag deaktiviert.",
+      error: "Active gateway checks are disabled by feature flag.",
     });
   }
 

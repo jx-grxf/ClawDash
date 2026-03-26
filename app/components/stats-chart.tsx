@@ -13,7 +13,7 @@ function formatValue(metric: StatsChartProps["metric"], value: number): string {
 
 export function StatsChart({ data, metric, color, height = 220 }: StatsChartProps) {
   if (data.length === 0) {
-    return <div className="flex h-[220px] items-center justify-center text-sm text-[var(--text-muted)]">keine Daten</div>;
+    return <div className="flex h-[220px] items-center justify-center text-sm text-[var(--text-muted)]">no data</div>;
   }
 
   const pad = { top: 16, right: 20, bottom: 48, left: 56 };

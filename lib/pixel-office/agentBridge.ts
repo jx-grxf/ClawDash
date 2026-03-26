@@ -25,6 +25,13 @@ const prevSubagentKeys = new Map<string, Set<string>>()
 /** Track previous agent states to detect offline→working transitions */
 const prevAgentStates = new Map<string, string>()
 
+function stateLabel(state: AgentActivity['state']): string {
+  if (state === 'working') return 'working'
+  if (state === 'waiting') return 'waiting'
+  if (state === 'idle') return 'idle'
+  return 'offline'
+}
+
 export function syncAgentsToOffice(
   activities: AgentActivity[],
   office: OfficeState,
@@ -65,7 +72,7 @@ export function syncAgentsToOffice(
       const baseLabel = displayName && displayName !== activity.agentId
         ? `${displayName} (${activity.agentId})`
         : activity.agentId
-      ch.label = `${baseLabel} • ${activity.state}`
+      ch.label = `${baseLabel} • ${stateLabel(activity.state)}`
     }
 
     switch (activity.state) {

@@ -10,7 +10,7 @@ export default function ModelsPage() {
       <section className="rounded-[28px] border border-[var(--border)] bg-[var(--card-strong)] p-6">
         <h2 className="text-2xl font-semibold">Models</h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
-          Provider, bekannte Modellreferenzen und echte Live-Probes über deine lokale OpenClaw-Installation.
+          Providers, known model references, and real live probes from your local OpenClaw installation.
         </p>
       </section>
 
@@ -20,9 +20,9 @@ export default function ModelsPage() {
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
                 <h3 className="text-xl font-semibold">{provider.id}</h3>
-                <p className="text-sm text-[var(--text-muted)]">API: {provider.api || "unbekannt"}</p>
+                <p className="text-sm text-[var(--text-muted)]">API: {provider.api || "unknown"}</p>
               </div>
-              <p className="text-sm text-[var(--text-muted)]">genutzt von: {provider.usedBy.join(", ") || "niemandem"}</p>
+              <p className="text-sm text-[var(--text-muted)]">used by: {provider.usedBy.join(", ") || "nobody"}</p>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
               {provider.models.map((model) => (

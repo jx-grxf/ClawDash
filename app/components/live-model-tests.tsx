@@ -25,10 +25,10 @@ export function LiveModelTests({ enabled }: LiveModelTestsProps) {
         setError(null);
         const response = await fetch("/api/model-tests", { cache: "no-store" });
         const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error || "Modellprobe fehlgeschlagen.");
+        if (!response.ok) throw new Error(payload.error || "Model probe failed.");
         setData(payload);
       } catch (loadError) {
-        setError(loadError instanceof Error ? loadError.message : "Modellprobe fehlgeschlagen.");
+        setError(loadError instanceof Error ? loadError.message : "Model probe failed.");
       }
     });
   };
@@ -37,9 +37,9 @@ export function LiveModelTests({ enabled }: LiveModelTestsProps) {
     <section className="space-y-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="text-2xl font-semibold">Live Modelltests</h2>
+          <h2 className="text-2xl font-semibold">Live model tests</h2>
           <p className="mt-1 text-sm text-[var(--text-muted)]">
-            Probe über `openclaw models status --probe`
+            Probe via `openclaw models status --probe`
           </p>
         </div>
         <button
@@ -47,23 +47,23 @@ export function LiveModelTests({ enabled }: LiveModelTestsProps) {
           disabled={!enabled || isPending}
           className="rounded-full border border-[var(--border)] bg-[var(--card-strong)] px-4 py-2 text-sm transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {!enabled ? "deaktiviert" : isPending ? "prüft..." : "neu prüfen"}
+          {!enabled ? "disabled" : isPending ? "checking..." : "run again"}
         </button>
       </div>
 
       {!enabled ? (
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text-muted)]">
-          Aktive Modelltests sind per Feature-Flag aus. Die Ansicht bleibt read-only.
+          Active model tests are disabled by feature flag. This view stays read-only.
         </div>
       ) : null}
       {data ? (
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text-muted)]">
-          Letzte Probe: {new Date(data.finishedAt).toLocaleString("de-AT")} · Dauer: {data.durationMs} ms · Ergebnisse: {data.results.length}
+          Last probe: {new Date(data.finishedAt).toLocaleString("de-AT")} · Duration: {data.durationMs} ms · Results: {data.results.length}
         </div>
       ) : null}
       {!data && !error ? (
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5 text-sm text-[var(--text-muted)]">
-          Noch keine Probe gelaufen. Klick auf `neu prüfen`, um die Modelle gezielt zu testen.
+          No probe has run yet. Click `run again` to test the models on demand.
         </div>
       ) : null}
       {error ? <p className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-300">{error}</p> : null}
@@ -74,7 +74,7 @@ export function LiveModelTests({ enabled }: LiveModelTestsProps) {
               <div>
                 <h3 className="text-lg font-semibold">{result.model}</h3>
                 <p className="text-sm text-[var(--text-muted)]">
-                  Provider: {result.provider} · Modus: {result.mode || "unbekannt"}
+                  Provider: {result.provider} · Mode: {result.mode || "unknown"}
                 </p>
               </div>
               <span className={`rounded-full border px-3 py-1 text-xs ${statusColor(result.status)}`}>
@@ -82,9 +82,9 @@ export function LiveModelTests({ enabled }: LiveModelTestsProps) {
               </span>
             </div>
             <div className="mt-3 flex flex-wrap gap-4 text-sm text-[var(--text-muted)]">
-              <span>Latenz: {result.latencyMs ? `${result.latencyMs} ms` : "-"}</span>
-              <span>Quelle: {result.source || "-"}</span>
-              <span>Profil: {result.profileId || "-"}</span>
+              <span>Latency: {result.latencyMs ? `${result.latencyMs} ms` : "-"}</span>
+              <span>Source: {result.source || "-"}</span>
+              <span>Profile: {result.profileId || "-"}</span>
             </div>
             {result.error ? <p className="mt-3 text-sm text-[var(--danger)]">{result.error}</p> : null}
           </article>

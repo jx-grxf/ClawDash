@@ -9,19 +9,19 @@ function formatTokens(value: number): string {
 }
 
 function formatLastActive(timestamp: number | null): string {
-  if (!timestamp) return "keine Aktivität";
+  if (!timestamp) return "no activity";
   return new Date(timestamp).toLocaleString("de-AT");
 }
 
 function formatRelativeAge(timestamp: number | null): string {
-  if (!timestamp) return "unbekannt";
+  if (!timestamp) return "unknown";
   const diff = Date.now() - timestamp;
   const minutes = Math.max(0, Math.round(diff / 60000));
-  if (minutes < 60) return `vor ${minutes} min`;
+  if (minutes < 60) return `${minutes} min ago`;
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `vor ${hours} h`;
+  if (hours < 24) return `${hours} h ago`;
   const days = Math.round(hours / 24);
-  return `vor ${days} d`;
+  return `${days} d ago`;
 }
 
 export default function HomePage() {
@@ -52,19 +52,19 @@ export default function HomePage() {
           <p className="mt-2 text-sm text-[var(--text-muted)]">{activeAgents} mit Session-Aktivität</p>
         </div>
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
-          <p className="text-sm text-[var(--text-muted)]">Modelle</p>
+          <p className="text-sm text-[var(--text-muted)]">Models</p>
           <p className="mt-3 text-4xl font-semibold">{data.providers.reduce((sum, provider) => sum + provider.models.length, 0)}</p>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">aus {data.providers.length} Providern</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">across {data.providers.length} providers</p>
         </div>
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <p className="text-sm text-[var(--text-muted)]">Token</p>
           <p className="mt-3 text-4xl font-semibold">{formatTokens(totalTokens)}</p>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">gesamt aus lokalen Sessions</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">total from local sessions</p>
         </div>
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
-          <p className="text-sm text-[var(--text-muted)]">Nachrichten</p>
+          <p className="text-sm text-[var(--text-muted)]">Messages</p>
           <p className="mt-3 text-4xl font-semibold">{totalMessages}</p>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">assistant replies im Log</p>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">assistant replies in logs</p>
         </div>
       </section>
 
@@ -77,8 +77,8 @@ export default function HomePage() {
                 <h2 className="mt-2 text-2xl font-semibold">Needs Attention</h2>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
                   {needsAttention.length > 0
-                    ? `${needsAttention.length} Agenten brauchen gerade einen Blick.`
-                    : "Aktuell sieht der Betrieb sauber aus."}
+                    ? `${needsAttention.length} agents need a quick look right now.`
+                    : "Everything looks stable right now."}
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm">
@@ -93,17 +93,17 @@ export default function HomePage() {
               <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4">
                 <p className="text-sm text-[var(--text-muted)]">Healthy</p>
                 <p className="mt-2 text-3xl font-semibold">{healthyAgents}</p>
-                <p className="mt-1 text-sm text-[var(--text-muted)]">working oder online</p>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">working or online</p>
               </div>
               <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4">
-                <p className="text-sm text-[var(--text-muted)]">Letzte Aktivität</p>
+                <p className="text-sm text-[var(--text-muted)]">Latest activity</p>
                 <p className="mt-2 text-2xl font-semibold">{formatRelativeAge(latestActivity)}</p>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">{formatLastActive(latestActivity)}</p>
               </div>
               <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4">
-                <p className="text-sm text-[var(--text-muted)]">Antwortzeit</p>
+                <p className="text-sm text-[var(--text-muted)]">Response time</p>
                 <p className="mt-2 text-3xl font-semibold">{averageResponseMs ? `${averageResponseMs} ms` : "n/a"}</p>
-                <p className="mt-1 text-sm text-[var(--text-muted)]">letzte 7 Tage</p>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">last 7 days</p>
               </div>
             </div>
 
@@ -130,15 +130,15 @@ export default function HomePage() {
                   </div>
                   <p className="mt-3 text-sm text-[var(--text-muted)]">
                     {agent.sessionCount === 0
-                      ? "Keine Session gefunden. Prüfe Setup oder Bindings."
+                      ? "No sessions found. Check setup or bindings."
                       : agent.state === "offline"
-                        ? "Zuletzt zu lange nicht aktiv. Prüfe Gateway, Channel oder Modellzugriff."
-                        : "Nur noch im Blick behalten, weil Aktivität oder Rhythmus abfällt."}
+                        ? "Inactive for too long. Check gateway, channel, or model access."
+                        : "Keep an eye on it because activity is slowing down."}
                   </p>
                 </article>
               )) : (
                 <div className="rounded-[20px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4 text-sm text-[var(--text-muted)]">
-                  Keine akuten Auffälligkeiten. Alle sichtbaren Agents haben brauchbare Aktivität.
+                  No urgent issues. All visible agents show usable activity.
                 </div>
               )}
             </div>
@@ -149,10 +149,10 @@ export default function HomePage() {
               <div>
                 <h2 className="text-2xl font-semibold">Agent Overview</h2>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">
-                  Standardmodell: <span className="font-medium text-[var(--text)]">{data.defaults.model}</span> · letzter 3-Tage-Tokenfluss: {formatTokens(recentVolume)}
+                  Default model: <span className="font-medium text-[var(--text)]">{data.defaults.model}</span> · 3-day token flow: {formatTokens(recentVolume)}
                 </p>
               </div>
-              <p className="text-sm text-[var(--text-muted)]">{totalMessages} Nachrichten gesamt</p>
+              <p className="text-sm text-[var(--text-muted)]">{totalMessages} total messages</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -170,7 +170,7 @@ export default function HomePage() {
                   </div>
                   <dl className="mt-4 space-y-2 text-sm">
                     <div className="flex justify-between gap-4">
-                      <dt className="text-[var(--text-muted)]">Modell</dt>
+                      <dt className="text-[var(--text-muted)]">Model</dt>
                       <dd className="text-right">{agent.model}</dd>
                     </div>
                     <div className="flex justify-between gap-4">
@@ -182,7 +182,7 @@ export default function HomePage() {
                       <dd>{agent.sessionCount}</dd>
                     </div>
                     <div className="flex justify-between gap-4">
-                      <dt className="text-[var(--text-muted)]">Zuletzt aktiv</dt>
+                      <dt className="text-[var(--text-muted)]">Last active</dt>
                       <dd className="text-right">{formatLastActive(agent.lastActive)}</dd>
                     </div>
                   </dl>
@@ -192,7 +192,7 @@ export default function HomePage() {
                         {platform}
                       </span>
                     )) : (
-                      <span className="text-xs text-[var(--text-muted)]">keine Plattform-Bindings erkannt</span>
+                      <span className="text-xs text-[var(--text-muted)]">no platform bindings detected</span>
                     )}
                   </div>
                 </article>
@@ -207,16 +207,16 @@ export default function HomePage() {
             <p className="text-sm uppercase tracking-[0.24em] text-[var(--text-muted)]">Shortcuts</p>
             <div className="mt-4 space-y-3 text-sm">
               <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/sessions?type=main">
-                Hauptsessions prüfen
+                Check main sessions
               </Link>
               <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/operator">
-                Operator View öffnen
+                Open operator view
               </Link>
               <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/stats">
-                Token- und Antwortzeit-Trends ansehen
+                View token and response trends
               </Link>
               <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/pixel-office">
-                Office-Layout öffnen
+                Open office layout
               </Link>
             </div>
           </div>

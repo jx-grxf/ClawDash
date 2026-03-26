@@ -73,11 +73,11 @@ export default async function StatsPage({
           <div>
             <h2 className="text-2xl font-semibold">Stats</h2>
             <p className="mt-2 text-sm text-[var(--text-muted)]">
-              Tokenverbrauch und Antwortzeiten aus den lokalen JSONL-Sessionlogs.
+              Token usage and response times from local JSONL session logs.
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link href="/stats" className="text-[var(--accent)]">alle Agents</Link>
+            <Link href="/stats" className="text-[var(--accent)]">all agents</Link>
             <Link href="/operator" className="text-[var(--accent)]">Operator View</Link>
           </div>
         </div>
@@ -104,19 +104,19 @@ export default async function StatsPage({
 
       <section className="grid gap-4 md:grid-cols-4">
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
-          <p className="text-sm text-[var(--text-muted)]">Token gesamt</p>
+          <p className="text-sm text-[var(--text-muted)]">Total tokens</p>
           <p className="mt-2 text-3xl font-semibold">{formatTokens(totalTokens)}</p>
         </div>
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
-          <p className="text-sm text-[var(--text-muted)]">Ø Antwortzeit</p>
+          <p className="text-sm text-[var(--text-muted)]">Avg response time</p>
           <p className="mt-2 text-3xl font-semibold">{avgResponseMs ? `${avgResponseMs} ms` : "n/a"}</p>
         </div>
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
-          <p className="text-sm text-[var(--text-muted)]">Tage mit Daten</p>
+          <p className="text-sm text-[var(--text-muted)]">Days with data</p>
           <p className="mt-2 text-3xl font-semibold">{daysWithData}</p>
         </div>
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
-          <p className="text-sm text-[var(--text-muted)]">Nachrichten</p>
+          <p className="text-sm text-[var(--text-muted)]">Messages</p>
           <p className="mt-2 text-3xl font-semibold">{totalMessages}</p>
         </div>
       </section>
@@ -125,30 +125,30 @@ export default async function StatsPage({
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--text-muted)]">Rolling 7d Tokens</p>
           <p className="mt-2 text-3xl font-semibold">{formatTokens(rolling.tokens7d)}</p>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">Antwortzeit Ø {rolling.responseMs7d || 0} ms</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">Avg response {rolling.responseMs7d || 0} ms</p>
         </div>
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--text-muted)]">Rolling 7d Messages</p>
           <p className="mt-2 text-3xl font-semibold">{rolling.messages7d}</p>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">letzte 7 Tage</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">last 7 days</p>
         </div>
         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--card)] p-4">
           <p className="text-sm text-[var(--text-muted)]">Scope</p>
-          <p className="mt-2 text-lg font-semibold">{activeAgent ? activeAgent.name : "Alle Agents"}</p>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">{activeAgent ? activeAgent.model : "gesamtes Dashboard"}</p>
+          <p className="mt-2 text-lg font-semibold">{activeAgent ? activeAgent.name : "All agents"}</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">{activeAgent ? activeAgent.model : "entire dashboard"}</p>
         </div>
       </section>
 
       <section className="grid gap-6">
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="mb-4">
-            <h3 className="text-xl font-semibold">Token Trend {activeAgent ? `· ${activeAgent.name}` : "· alle Agents"}</h3>
+            <h3 className="text-xl font-semibold">Token trend {activeAgent ? `· ${activeAgent.name}` : "· all agents"}</h3>
           </div>
           <StatsChart data={chartStats.daily} metric="totalTokens" color="#d0612d" />
         </div>
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="mb-4">
-            <h3 className="text-xl font-semibold">Antwortzeit Trend {activeAgent ? `· ${activeAgent.name}` : "· alle Agents"}</h3>
+            <h3 className="text-xl font-semibold">Response trend {activeAgent ? `· ${activeAgent.name}` : "· all agents"}</h3>
           </div>
           <StatsChart data={chartStats.daily} metric="avgResponseMs" color="#1d8f56" />
         </div>
@@ -158,7 +158,7 @@ export default async function StatsPage({
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="mb-4">
             <h3 className="text-xl font-semibold">Per Agent</h3>
-            <p className="text-sm text-[var(--text-muted)]">Tokens und Reaktionsdaten pro Agent.</p>
+            <p className="text-sm text-[var(--text-muted)]">Tokens and response data per agent.</p>
           </div>
           <div className="space-y-3">
             {byAgent.map((item) => (
@@ -167,7 +167,7 @@ export default async function StatsPage({
                 label={item.label}
                 value={item.totalTokens}
                 maxValue={maxAgentTokens}
-                meta={`${item.messageCount} Messages · ${item.avgResponseMs || 0} ms · ${item.daysWithData} Tage`}
+                meta={`${item.messageCount} messages · ${item.avgResponseMs || 0} ms · ${item.daysWithData} days`}
                 href={`/stats?agent=${item.id}`}
                 active={activeAgent?.id === item.id}
               />
@@ -177,8 +177,8 @@ export default async function StatsPage({
 
         <div className="rounded-[24px] border border-[var(--border)] bg-[var(--card)] p-5">
           <div className="mb-4">
-            <h3 className="text-xl font-semibold">Per Model</h3>
-            <p className="text-sm text-[var(--text-muted)]">Aktive Modellnutzung über alle Agents.</p>
+            <h3 className="text-xl font-semibold">Per model</h3>
+            <p className="text-sm text-[var(--text-muted)]">Active model usage across all agents.</p>
           </div>
           <div className="space-y-3">
             {byModel.map((item) => (
@@ -187,7 +187,7 @@ export default async function StatsPage({
                 label={item.label}
                 value={item.totalTokens}
                 maxValue={maxModelTokens}
-                meta={`${item.messageCount} Messages · ${item.avgResponseMs || 0} ms · ${item.daysWithData} Tage`}
+                meta={`${item.messageCount} messages · ${item.avgResponseMs || 0} ms · ${item.daysWithData} days`}
               />
             ))}
           </div>

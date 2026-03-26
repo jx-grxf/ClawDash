@@ -16,13 +16,13 @@ function formatTokens(tokens: number): string {
 function formatAge(timestamp: number | null | undefined): string {
   if (!timestamp) return "-";
   const diff = Date.now() - timestamp;
-  if (diff < 60_000) return "gerade eben";
+  if (diff < 60_000) return "just now";
   const minutes = Math.round(diff / 60_000);
-  if (minutes < 60) return `vor ${minutes} min`;
+  if (minutes < 60) return `${minutes} min ago`;
   const hours = Math.round(minutes / 60);
-  if (hours < 24) return `vor ${hours} h`;
+  if (hours < 24) return `${hours} h ago`;
   const days = Math.round(hours / 24);
-  return `vor ${days} d`;
+  return `${days} d ago`;
 }
 
 const TRANSPORT_LABELS: Record<SessionTransport, string> = {
@@ -38,7 +38,7 @@ const TRANSPORT_LABELS: Record<SessionTransport, string> = {
 };
 
 const TRANSPORT_FILTERS: Array<{ label: string; value: string }> = [
-  { label: "Alle", value: "all" },
+  { label: "All", value: "all" },
   { label: "Main", value: "main" },
   { label: "Direct", value: "direct" },
   { label: "Group", value: "group" },
@@ -50,7 +50,7 @@ const TRANSPORT_FILTERS: Array<{ label: string; value: string }> = [
 ];
 
 const ACTIVITY_FILTERS: Array<{ label: string; value: string }> = [
-  { label: "Alle", value: "all" },
+  { label: "All", value: "all" },
   { label: "24h", value: "recent" },
   { label: "7d", value: "week" },
   { label: "30d", value: "month" },
@@ -108,11 +108,11 @@ export default async function SessionsPage({
           <div>
             <h2 className="text-2xl font-semibold">Sessions</h2>
             <p className="mt-2 text-sm text-[var(--text-muted)]">
-              Links den Agenten wählen, rechts die Sessions nach Typ, Alter und Inhalt eingrenzen.
+              Pick an agent on the left, then filter sessions by type, age, and content.
             </p>
           </div>
           <div className="text-sm text-[var(--text-muted)]">
-            {sessions.length} Sessions · {filteredSessions.length} sichtbar
+            {sessions.length} sessions · {filteredSessions.length} visible
           </div>
         </div>
       </section>
@@ -156,7 +156,7 @@ export default async function SessionsPage({
                   <p className="text-sm text-[var(--text-muted)]">{activeAgent.id} · {activeAgent.model}</p>
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm">
-                  <Link href="/" className="text-[var(--accent)]">zurück zum Dashboard</Link>
+                  <Link href="/" className="text-[var(--accent)]">back to dashboard</Link>
                   <Link href="/operator" className="text-[var(--accent)]">Operator View</Link>
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default async function SessionsPage({
 
               {recentSession ? (
                 <div className="mb-4 rounded-[20px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4 text-sm text-[var(--text-muted)]">
-                  Neueste Session: <span className="text-[var(--text)]">{TRANSPORT_LABELS[recentSession.transport]}</span> · {formatAge(recentSession.updatedAt)} · {formatTokens(recentSession.totalTokens)} Tokens
+                  Latest session: <span className="text-[var(--text)]">{TRANSPORT_LABELS[recentSession.transport]}</span> · {formatAge(recentSession.updatedAt)} · {formatTokens(recentSession.totalTokens)} tokens
                 </div>
               ) : null}
 
@@ -221,31 +221,31 @@ export default async function SessionsPage({
                       </div>
                     </div>
                     <div className="mt-3 flex flex-wrap gap-3 text-sm text-[var(--text-muted)]">
-                      <span>Ziel: {session.target || "-"}</span>
+                      <span>Target: {session.target || "-"}</span>
                       <span>Total Tokens: {formatTokens(session.totalTokens)}</span>
                       <span>Context Tokens: {formatTokens(session.contextTokens)}</span>
                       <span>Messages: {session.messageCount ?? 0}</span>
-                      <span>Ø Antwortzeit: {session.avgResponseMs ? `${session.avgResponseMs} ms` : "-"}</span>
+                      <span>Avg response: {session.avgResponseMs ? `${session.avgResponseMs} ms` : "-"}</span>
                     </div>
                     <div className="mt-4 grid gap-3 md:grid-cols-2">
                       <div className="rounded-[16px] border border-[var(--border)] bg-[var(--card)] p-3">
-                        <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Letzte User Message</p>
+                        <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Latest user message</p>
                         <p className="mt-2 text-sm text-[var(--text)]">{previewText(session.lastUserMessage)}</p>
                       </div>
                       <div className="rounded-[16px] border border-[var(--border)] bg-[var(--card)] p-3">
-                        <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Letzte Assistant Message</p>
+                        <p className="text-xs uppercase tracking-[0.18em] text-[var(--text-muted)]">Latest assistant message</p>
                         <p className="mt-2 text-sm text-[var(--text)]">{previewText(session.lastAssistantMessage)}</p>
                       </div>
                     </div>
                   </article>
                 ))}
                 {filteredSessions.length === 0 ? (
-                  <p className="text-sm text-[var(--text-muted)]">Keine Sessions gefunden.</p>
+                  <p className="text-sm text-[var(--text-muted)]">No sessions found.</p>
                 ) : null}
               </div>
             </>
           ) : (
-            <p className="text-sm text-[var(--text-muted)]">Keine Agents gefunden.</p>
+            <p className="text-sm text-[var(--text-muted)]">No agents found.</p>
           )}
         </section>
       </section>

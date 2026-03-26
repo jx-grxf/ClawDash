@@ -23,7 +23,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     if (!FEATURE_FLAGS.enableLayoutWrite) {
-      return NextResponse.json({ error: "Layout-Schreibzugriff ist deaktiviert.", disabled: true, scope: "local-write" }, { status: 403 })
+      return NextResponse.json({ error: "Layout write access is disabled.", disabled: true, scope: "local-write" }, { status: 403 })
     }
     const { layout } = await request.json()
     if (!layout || layout.version !== 1 || !Array.isArray(layout.tiles)) {

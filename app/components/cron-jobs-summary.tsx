@@ -42,10 +42,10 @@ export function CronJobsSummary() {
       try {
         const response = await fetch("/api/cron-jobs", { cache: "no-store" });
         const payload = await response.json();
-        if (!response.ok) throw new Error(payload.error || "Cron-Übersicht konnte nicht geladen werden.");
+        if (!response.ok) throw new Error(payload.error || "Failed to load cron overview.");
         if (active) setData(payload);
       } catch (loadError) {
-        if (active) setError(loadError instanceof Error ? loadError.message : "Cron-Übersicht konnte nicht geladen werden.");
+        if (active) setError(loadError instanceof Error ? loadError.message : "Failed to load cron overview.");
       }
     }
 
@@ -60,7 +60,7 @@ export function CronJobsSummary() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h3 className="text-xl font-semibold">Cron Jobs</h3>
-          <p className="mt-1 text-sm text-[var(--text-muted)]">Live-Übersicht aus dem lokalen Job-Store.</p>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">Live overview from the local job store.</p>
         </div>
         <div className="text-sm text-[var(--text-muted)]">
           {data?.totals.jobs || 0} Jobs · {data?.totals.running || 0} running
@@ -71,7 +71,7 @@ export function CronJobsSummary() {
 
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <div className="rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4">
-          <p className="text-sm text-[var(--text-muted)]">Gesamt</p>
+          <p className="text-sm text-[var(--text-muted)]">Total</p>
           <p className="mt-2 text-3xl font-semibold">{data?.totals.jobs || 0}</p>
         </div>
         <div className="rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 p-4">
@@ -98,14 +98,14 @@ export function CronJobsSummary() {
             </div>
             <div className="mt-3 flex flex-wrap gap-3 text-sm text-[var(--text-muted)]">
               <span>Next: {formatTime(job.nextRunAt || 0)}</span>
-              <span>Dauer: {job.durationMs ? `${Math.round(job.durationMs / 1000)}s` : "-"}</span>
-              <span>Fehler: {job.consecutiveFailures}</span>
+              <span>Duration: {job.durationMs ? `${Math.round(job.durationMs / 1000)}s` : "-"}</span>
+              <span>Failures: {job.consecutiveFailures}</span>
             </div>
             {job.lastSummary ? <p className="mt-3 text-sm text-[var(--text)]">{job.lastSummary}</p> : null}
           </article>
         ))}
         {data && data.jobs.length === 0 ? (
-          <p className="text-sm text-[var(--text-muted)]">Keine Cron-Jobs gefunden.</p>
+          <p className="text-sm text-[var(--text-muted)]">No cron jobs found.</p>
         ) : null}
       </div>
     </section>

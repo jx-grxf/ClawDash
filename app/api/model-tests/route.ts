@@ -55,7 +55,7 @@ function normalizeResult(result: ProbeEntry): ModelProbeResult | null {
 export async function GET() {
   try {
     if (!FEATURE_FLAGS.enableActiveModelTests) {
-      return NextResponse.json({ error: "Aktive Modelltests sind in ClawDash deaktiviert.", disabled: true, scope: "active-check" }, { status: 403 });
+      return NextResponse.json({ error: "Active model tests are disabled in ClawDash.", disabled: true, scope: "active-check" }, { status: 403 });
     }
     const { stdout, stderr } = await execOpenclaw(["models", "status", "--probe", "--json", "--probe-timeout", "3000"]);
     const parsed = parseJsonFromMixedOutput(`${stdout}\n${stderr}`) as ProbePayload | null;
@@ -73,7 +73,7 @@ export async function GET() {
 
     return NextResponse.json(summary);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Modellprobe fehlgeschlagen.";
+    const message = error instanceof Error ? error.message : "Model probe failed.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
