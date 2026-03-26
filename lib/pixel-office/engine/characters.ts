@@ -79,6 +79,7 @@ export function createCharacter(
     frame: 0,
     frameTimer: 0,
     moveSpeedMultiplier: 1,
+    zonePreference: null,
     wanderTimer: 0,
     wanderCount: 0,
     wanderLimit: randomInt(WANDER_MOVES_BEFORE_REST_MIN, WANDER_MOVES_BEFORE_REST_MAX),
@@ -263,7 +264,9 @@ export function updateCharacter(
               ch.tileRow === ch.interactionTarget.row) {
             ch.dir = ch.interactionTarget.facingDir
             ch.state = CharacterState.IDLE
-            const stayTime = randomRange(INTERACTION_STAY_MIN_SEC, INTERACTION_STAY_MAX_SEC)
+            const stayTime = ch.interactionTarget.furnitureType === 'sofa'
+              ? randomRange(30, 60)
+              : randomRange(INTERACTION_STAY_MIN_SEC, INTERACTION_STAY_MAX_SEC)
             ch.wanderTimer = stayTime
             // Show photo comments when visiting the photograph
             if (ch.interactionTarget.furnitureType === 'photograph') {

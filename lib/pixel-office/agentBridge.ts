@@ -62,27 +62,32 @@ export function syncAgentsToOffice(
     const ch = office.characters.get(charId)
     if (ch) {
       const displayName = activity.name?.trim()
-      ch.label = displayName && displayName !== activity.agentId
+      const baseLabel = displayName && displayName !== activity.agentId
         ? `${displayName} (${activity.agentId})`
         : activity.agentId
+      ch.label = `${baseLabel} • ${activity.state}`
     }
 
     switch (activity.state) {
       case 'working':
-        office.setAgentActive(charId, true)
+        office.setAgentActive(charId, false)
         office.setAgentTool(charId, activity.currentTool || null)
+        office.sendAgentToZone(charId, 'office')
         break
       case 'idle':
         office.setAgentActive(charId, false)
         office.setAgentTool(charId, null)
+        office.sendAgentToZone(charId, 'lounge')
         break
       case 'waiting':
-        office.setAgentActive(charId, true)
+        office.setAgentActive(charId, false)
+        office.sendAgentToZone(charId, 'office')
         office.showWaitingBubble(charId)
         break
       case 'offline':
         office.setAgentActive(charId, false)
         office.setAgentTool(charId, null)
+        office.sendAgentToZone(charId, 'lounge')
         break
     }
 

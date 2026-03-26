@@ -186,6 +186,7 @@ export interface Character {
   frame: number
   frameTimer: number
   moveSpeedMultiplier: number
+  zonePreference: 'office' | 'lounge' | null
   wanderTimer: number
   wanderCount: number
   wanderLimit: number

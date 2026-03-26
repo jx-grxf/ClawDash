@@ -875,6 +875,22 @@ export class OfficeState {
     return [...lounge, ...lounge, ...lounge, ...lounge, ...lounge, ...lounge, ...officeTiles]
   }
 
+  private getOfficePatrolTiles(): Array<{ col: number; row: number }> {
+    const officeTiles = this.walkableTiles.filter((t) =>
+      t.row <= 10 && t.col >= 1 && t.col <= 19
+    )
+    return officeTiles.length > 0 ? officeTiles : this.walkableTiles
+  }
+
+  private getLoungePatrolTiles(): Array<{ col: number; row: number }> {
+    const loungeTiles = this.walkableTiles.filter((t) => t.row >= 9)
+    return loungeTiles.length > 0 ? loungeTiles : this.walkableTiles
+  }
+
+  private getSofaInteractionPoints(): InteractionPoint[] {
+    return this.interactionPoints.filter((point) => point.furnitureType === 'sofa')
+  }
+
   private getGatewaySreRescuePoint(patrolTiles: Array<{ col: number; row: number }>): { col: number; row: number } {
     for (const candidate of GATEWAY_SRE_RESCUE_CANDIDATES) {
       if (patrolTiles.some((t) => t.col === candidate.col && t.row === candidate.row)) {
@@ -1404,6 +1420,52 @@ export class OfficeState {
     }
   }
 
+  sendAgentToZone(id: number, zone: 'office' | 'lounge'): void {
+    const ch = this.characters.get(id)
+    if (!ch || ch.isCat || ch.isLobster || ch.isSystemRole) return
+
+    ch.zonePreference = zone
+    ch.path = []
+    ch.moveProgress = 0
+    ch.frame = 0
+    ch.frameTimer = 0
+
+    if (zone === 'lounge') {
+      const sofaPoints = this.getSofaInteractionPoints()
+      const point = sofaPoints[Math.floor(Math.random() * Math.max(sofaPoints.length, 1))]
+      if (point) {
+        const path = this.withOwnSeatUnblocked(ch, () =>
+          findPath(ch.tileCol, ch.tileRow, point.col, point.row, this.tileMap, this.blockedTiles)
+        )
+        if (path.length > 0) {
+          ch.path = path
+          ch.state = CharacterState.WALK
+          ch.interactionTarget = {
+            col: point.col,
+            row: point.row,
+            facingDir: point.facingDir,
+            furnitureType: point.furnitureType,
+          }
+          ch.wanderTimer = 45
+          return
+        }
+      }
+    }
+
+    const pool = zone === 'office' ? this.getOfficePatrolTiles() : this.getLoungePatrolTiles()
+    if (pool.length === 0) return
+    const target = pool[Math.floor(Math.random() * pool.length)]
+    const path = this.withOwnSeatUnblocked(ch, () =>
+      findPath(ch.tileCol, ch.tileRow, target.col, target.row, this.tileMap, this.blockedTiles)
+    )
+    if (path.length > 0) {
+      ch.path = path
+      ch.state = CharacterState.WALK
+      ch.interactionTarget = null
+      ch.wanderTimer = zone === 'office' ? 8 : 30
+    }
+  }
+
   /** Rebuild furniture instances with auto-state applied (active agents turn electronics ON) */
   private rebuildFurnitureInstances(): void {
     // Collect tiles where active agents face desks
@@ -1556,9 +1618,15 @@ export class OfficeState {
       if (ch.systemRoleType === 'gateway_sre') {
         this.updateGatewaySreCharacter(ch, dt)
       } else {
+        const scopedWalkableTiles =
+          !ch.isActive && ch.zonePreference === 'office'
+            ? this.getOfficePatrolTiles()
+            : !ch.isActive && ch.zonePreference === 'lounge'
+              ? this.getLoungePatrolTiles()
+              : this.walkableTiles
         // Temporarily unblock own seat so character can pathfind to it
         this.withOwnSeatUnblocked(ch, () =>
-          updateCharacter(ch, dt, this.walkableTiles, this.seats, this.tileMap, this.blockedTiles, this.interactionPoints)
+          updateCharacter(ch, dt, scopedWalkableTiles, this.seats, this.tileMap, this.blockedTiles, this.interactionPoints)
         )
       }
 
