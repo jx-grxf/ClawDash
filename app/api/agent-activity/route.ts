@@ -716,6 +716,62 @@ async function parseCronJobs(agentSessionsDir: string, cronJobsForAgent: CronSto
   return cronJobs
 }
 
+async function getAgentLastActive(agentSessionsDir: string): Promise<number> {
+  if (!existsSync(agentSessionsDir)) return 0
+
+  let lastActive = 0
+  const knownParentFilePaths = new Set<string>()
+  const subagentSessionIds = new Set<string>()
+  const sessionsIndexPath = path.join(agentSessionsDir, 'sessions.json')
+
+  if (existsSync(sessionsIndexPath)) {
+    try {
+      const sessionsIndexRaw = await fs.readFile(sessionsIndexPath, 'utf8')
+      const sessionsIndex = JSON.parse(sessionsIndexRaw) as SessionsIndex
+
+      for (const [sessionKey, meta] of Object.entries(sessionsIndex)) {
+        if (!meta || typeof meta.sessionId !== 'string' || !meta.sessionId) continue
+
+        if (sessionKey.includes(':subagent:')) {
+          subagentSessionIds.add(meta.sessionId)
+          continue
+        }
+
+        const updatedAt = typeof meta.updatedAt === 'number' && meta.updatedAt > 0 ? meta.updatedAt : 0
+        if (updatedAt > lastActive) lastActive = updatedAt
+
+        const filePath = path.join(agentSessionsDir, `${meta.sessionId}.jsonl`)
+        knownParentFilePaths.add(filePath)
+      }
+    } catch {
+      // Ignore index parse errors and fall back to file mtimes below.
+    }
+  }
+
+  try {
+    const files = await fs.readdir(agentSessionsDir)
+    for (const file of files) {
+      if (!file.endsWith('.jsonl')) continue
+      if (file.startsWith('probe-')) continue
+
+      const filePath = path.join(agentSessionsDir, file)
+      if (knownParentFilePaths.has(filePath)) continue
+
+      const sessionId = file.slice(0, -'.jsonl'.length)
+      if (subagentSessionIds.has(sessionId)) continue
+
+      const stat = await fs.stat(filePath)
+      if (stat.mtimeMs > lastActive) {
+        lastActive = stat.mtimeMs
+      }
+    }
+  } catch {
+    // Ignore fallback scan errors.
+  }
+
+  return lastActive
+}
+
 export async function GET() {
   const configPath = OPENCLAW_CONFIG_PATH
   const agentsDir = OPENCLAW_AGENTS_DIR
@@ -733,28 +789,13 @@ export async function GET() {
         const liveCronJobs = await loadCronJobs(config)
 
         for (const agent of agentList) {
-          let lastActive = 0
           let agentSessionsDir = ''
 
           if (existsSync(agentsDir)) {
             agentSessionsDir = path.join(agentsDir, agent.id, 'sessions')
-            if (existsSync(agentSessionsDir)) {
-              try {
-                const files = await fs.readdir(agentSessionsDir)
-                for (const file of files) {
-                  if (!file.endsWith('.jsonl')) continue
-                  if (file.startsWith('probe-')) continue
-                  const filePath = path.join(agentSessionsDir, file)
-                  const stat = await fs.stat(filePath)
-                  if (stat.mtimeMs > lastActive) {
-                    lastActive = stat.mtimeMs
-                  }
-                }
-              } catch {
-                // Ignore
-              }
-            }
           }
+
+          const lastActive = agentSessionsDir ? await getAgentLastActive(agentSessionsDir) : 0
 
           let state: 'idle' | 'working' | 'waiting' | 'offline'
           const timeDiff = now - lastActive
