@@ -237,7 +237,7 @@ let cachedPrevAgentStates = new Map<string, string>()
 
 export default function PixelOfficePage() {
   const { t, locale } = useI18n()
-  const [layoutWriteEnabled, setLayoutWriteEnabled] = useState(false)
+  const [layoutWriteEnabled, setLayoutWriteEnabled] = useState<boolean | null>(null)
   const [externalFetchesEnabled, setExternalFetchesEnabled] = useState(false)
   const [agentPollIntervalMs, setAgentPollIntervalMs] = useState(2500)
   const [statsPollIntervalMs, setStatsPollIntervalMs] = useState(45000)
@@ -276,7 +276,7 @@ export default function PixelOfficePage() {
   const gatewayHealthyStreakRef = useRef(0)
   const providerAccessModeRef = useRef<Record<string, 'auth' | 'api_key'>>({})
   const providersRef = useRef<Array<{ id: string; api: string; models: Array<{ id: string; name: string; contextWindow?: number }>; usedBy: Array<{ id: string; emoji: string; name: string }> }>>([])
-  const [isEditMode, setIsEditMode] = useState(layoutWriteEnabled ? cachedIsEditMode : false)
+  const [isEditMode, setIsEditMode] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
   const [editorTick, setEditorTick] = useState(0)
   const [officeReady, setOfficeReady] = useState(false)
@@ -448,6 +448,14 @@ export default function PixelOfficePage() {
     officeReadyRef.current = officeReady
   }, [officeReady])
 
+  useEffect(() => {
+    if (layoutWriteEnabled === true) {
+      setIsEditMode(cachedIsEditMode)
+      return
+    }
+    setIsEditMode(false)
+  }, [layoutWriteEnabled])
+
   // Load saved layout and sound preference
   useEffect(() => {
     const loadLayout = async () => {
@@ -458,7 +466,7 @@ export default function PixelOfficePage() {
         savedLayoutRef.current = cachedSavedLayout
         editorRef.current = cachedEditorState ?? editorRef.current
         panRef.current = cachedPan
-        setIsEditMode(layoutWriteEnabled ? cachedIsEditMode : false)
+        setIsEditMode(layoutWriteEnabled === true ? cachedIsEditMode : false)
         if (!spriteAssetsPromise) {
           spriteAssetsPromise = Promise.all([loadCharacterPNGs(), loadWallPNG()]).then(() => undefined)
         }
@@ -1817,7 +1825,7 @@ export default function PixelOfficePage() {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-[var(--text)]">{t('pixelOffice.title')}</span>
-            {!layoutWriteEnabled ? (
+            {layoutWriteEnabled === false ? (
               <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-amber-100">
                 read-only
               </span>
@@ -1839,13 +1847,13 @@ export default function PixelOfficePage() {
               </button>
             )}
             <button onClick={toggleEditMode}
-              disabled={!layoutWriteEnabled}
+              disabled={layoutWriteEnabled === false ? true : undefined}
               className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
-                !layoutWriteEnabled ? 'bg-[var(--card)] border-[var(--border)] text-[var(--text-muted)] opacity-60 cursor-not-allowed'
+                layoutWriteEnabled === false ? 'bg-[var(--card)] border-[var(--border)] text-[var(--text-muted)] opacity-60 cursor-not-allowed'
                   : isEditMode ? 'bg-[var(--accent)]/10 border-[var(--accent)]/30 text-[var(--accent)]'
                   : 'bg-[var(--card)] border-[var(--border)] text-[var(--text-muted)]'
               }`}>
-              {layoutWriteEnabled ? (isEditMode ? t('pixelOffice.exitEdit') : t('pixelOffice.editMode')) : 'read-only'}
+              {layoutWriteEnabled === true ? (isEditMode ? t('pixelOffice.exitEdit') : t('pixelOffice.editMode')) : 'read-only'}
             </button>
           </div>
         </div>
@@ -1892,7 +1900,7 @@ export default function PixelOfficePage() {
             </div>
           </div>
         )}
-        {!layoutWriteEnabled && officeReady ? (
+        {layoutWriteEnabled === false && officeReady ? (
           <div className="absolute left-3 top-3 z-20 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100 backdrop-blur-sm">
             Layout is read-only. Write access is disabled by feature flag.
           </div>
@@ -2376,7 +2384,7 @@ export default function PixelOfficePage() {
               isDirty={editor.isDirty}
               canUndo={editor.undoStack.length > 0}
               canRedo={editor.redoStack.length > 0}
-              layoutWriteEnabled={layoutWriteEnabled}
+              layoutWriteEnabled={layoutWriteEnabled === true}
               onUndo={handleUndo} onRedo={handleRedo}
               onSave={handleSave} onReset={handleReset} />
             <EditorToolbar

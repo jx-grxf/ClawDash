@@ -149,7 +149,7 @@ function parseCharacterSheet(sheet: SpriteData): LoadedCharacterData {
 
 /**
  * Load character PNGs from /assets/pixel-office/characters/ and register them.
- * Loads the default set plus any extra contiguous char_N.png files.
+ * Loads the bundled character sheets shipped with ClawDash.
  * Falls back silently to hardcoded templates if the base set fails.
  */
 export async function loadCharacterPNGs(): Promise<boolean> {

@@ -22,8 +22,8 @@ let inFlightGatewayHealth: Promise<GatewayHealthSummary> | null = null;
 
 async function computeGatewayHealthSummary(
   endpoints: ReturnType<typeof resolveGatewayEndpoints>,
-  startedAt: number,
 ): Promise<GatewayHealthSummary> {
+  const startedAt = Date.now();
   try {
     const [{ stdout: versionStdout }, { stdout, stderr }] = await Promise.all([
       execOpenclaw(["--version"]),
@@ -70,7 +70,6 @@ async function computeGatewayHealthSummary(
 
 export async function GET() {
   const featureFlags = getFeatureFlags();
-  const startedAt = Date.now();
   const data = getDashboardData();
   const endpoints = resolveGatewayEndpoints({
     port: data.gateway.port,
@@ -102,7 +101,7 @@ export async function GET() {
   }
 
   if (!inFlightGatewayHealth) {
-    inFlightGatewayHealth = computeGatewayHealthSummary(endpoints, startedAt).finally(() => {
+    inFlightGatewayHealth = computeGatewayHealthSummary(endpoints).finally(() => {
       inFlightGatewayHealth = null;
     });
   }
