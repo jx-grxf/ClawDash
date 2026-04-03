@@ -42,7 +42,7 @@ function BarRow({
   );
 
   if (!href) return body;
-  return <Link href={href}>{body}</Link>;
+  return <Link href={href} prefetch={false}>{body}</Link>;
 }
 
 export default async function StatsPage({
@@ -79,8 +79,8 @@ export default async function StatsPage({
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link href="/stats" className="text-[var(--accent)]">all agents</Link>
-            <Link href="/operator" className="text-[var(--accent)]">Operator View</Link>
+            <Link href="/stats" prefetch={false} className="text-[var(--accent)]">all agents</Link>
+            <Link href="/operator" prefetch={false} className="text-[var(--accent)]">Operator View</Link>
           </div>
         </div>
       </section>
@@ -93,6 +93,7 @@ export default async function StatsPage({
               <Link
                 key={agent.id}
                 href={`/stats?agent=${agent.id}`}
+                prefetch={false}
                 className={`rounded-full border px-4 py-2 text-sm ${
                   active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--bg-elevated)]/70"
                 }`}

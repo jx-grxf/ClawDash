@@ -29,9 +29,9 @@ export default function OperatorPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3 text-sm">
-            <Link href="/sessions" className="text-[var(--accent)]">Sessions</Link>
-            <Link href="/stats" className="text-[var(--accent)]">Stats</Link>
-            <Link href="/pixel-office" className="text-[var(--accent)]">Pixel Office</Link>
+            <Link href="/sessions" prefetch={false} className="text-[var(--accent)]">Sessions</Link>
+            <Link href="/stats" prefetch={false} className="text-[var(--accent)]">Stats</Link>
+            <Link href="/pixel-office" prefetch={false} className="text-[var(--accent)]">Pixel Office</Link>
           </div>
         </div>
       </section>

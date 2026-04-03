@@ -129,6 +129,7 @@ export default async function SessionsPage({
                 <Link
                   key={agent.id}
                   href={`/sessions?agent=${agent.id}`}
+                  prefetch={false}
                   className={`block rounded-[18px] border px-4 py-3 transition ${
                     isActive
                       ? "border-[var(--accent)] bg-[var(--accent-soft)]"
@@ -158,8 +159,8 @@ export default async function SessionsPage({
                   <p className="text-sm text-[var(--text-muted)]">{activeAgent.id} · {activeAgent.model}</p>
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm">
-                  <Link href="/" className="text-[var(--accent)]">back to dashboard</Link>
-                  <Link href="/operator" className="text-[var(--accent)]">Operator View</Link>
+                  <Link href="/" prefetch={false} className="text-[var(--accent)]">back to dashboard</Link>
+                  <Link href="/operator" prefetch={false} className="text-[var(--accent)]">Operator View</Link>
                 </div>
               </div>
 
@@ -171,6 +172,7 @@ export default async function SessionsPage({
                       <Link
                         key={chip.value}
                         href={`/sessions?agent=${activeAgent.id}${chip.value === "all" ? "" : `&type=${chip.value}`}`}
+                        prefetch={false}
                         className={`rounded-full border px-4 py-2 ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--bg-elevated)]/70"}`}
                       >
                         {chip.label} · {transportCounts.find((item) => item.value === chip.value)?.count || 0}
@@ -186,6 +188,7 @@ export default async function SessionsPage({
                       <Link
                         key={chip.value}
                         href={href}
+                        prefetch={false}
                         className={`rounded-full border px-4 py-2 ${active ? "border-[var(--accent)] bg-[var(--accent-soft)]" : "border-[var(--border)] bg-[var(--bg-elevated)]/70"}`}
                       >
                         {chip.label}

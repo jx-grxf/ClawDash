@@ -25,6 +25,7 @@ export function SidebarNav() {
           <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             className={`flex items-center gap-3 rounded-[18px] border px-4 py-3 text-sm transition ${
               active
                 ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--text)]"

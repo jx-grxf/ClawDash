@@ -84,10 +84,10 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm">
-                <Link className="text-[var(--accent)]" href="/operator">Operator</Link>
-                <Link className="text-[var(--accent)]" href="/sessions">Sessions</Link>
-                <Link className="text-[var(--accent)]" href="/stats">Stats</Link>
-                <Link className="text-[var(--accent)]" href="/pixel-office">Office</Link>
+                <Link className="text-[var(--accent)]" href="/operator" prefetch={false}>Operator</Link>
+                <Link className="text-[var(--accent)]" href="/sessions" prefetch={false}>Sessions</Link>
+                <Link className="text-[var(--accent)]" href="/stats" prefetch={false}>Stats</Link>
+                <Link className="text-[var(--accent)]" href="/pixel-office" prefetch={false}>Office</Link>
               </div>
             </div>
 
@@ -208,16 +208,16 @@ export default function HomePage() {
           <div className="rounded-[28px] border border-[var(--border)] bg-[var(--card)] p-5">
             <p className="text-sm uppercase tracking-[0.24em] text-[var(--text-muted)]">Shortcuts</p>
             <div className="mt-4 space-y-3 text-sm">
-              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/sessions?type=main">
+              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/sessions?type=main" prefetch={false}>
                 Check main sessions
               </Link>
-              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/operator">
+              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/operator" prefetch={false}>
                 Open operator view
               </Link>
-              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/stats">
+              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/stats" prefetch={false}>
                 View token and response trends
               </Link>
-              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/pixel-office">
+              <Link className="block rounded-[18px] border border-[var(--border)] bg-[var(--bg-elevated)]/70 px-4 py-3 hover:border-[var(--accent)]" href="/pixel-office" prefetch={false}>
                 Open office layout
               </Link>
             </div>

@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+const { spawn } = require("node:child_process");
+const path = require("node:path");
+
+const repoRoot = path.resolve(__dirname, "..");
+const [, , command = "dev", ...args] = process.argv;
+
+const scriptMap = {
+  dev: "dev",
+  start: "start",
+  build: "build",
+  lint: "lint",
+};
+
+if (command === "--help" || command === "-h") {
+  process.stdout.write(
+    [
+      "Usage: clawdash [dev|start|build|lint] [args...]",
+      "",
+      "Defaults to `dev` when no command is provided.",
+      "",
+    ].join("\n"),
+  );
+  process.exit(0);
+}
+
+const script = scriptMap[command];
+
+if (!script) {
+  process.stderr.write(
+    `Unknown command: ${command}\nUse one of: ${Object.keys(scriptMap).join(", ")}\n`,
+  );
+  process.exit(1);
+}
+
+const child = spawn("npm", ["run", script, "--", ...args], {
+  cwd: repoRoot,
+  stdio: "inherit",
+  shell: process.platform === "win32",
+});
+
+child.on("exit", (code, signal) => {
+  if (signal) {
+    process.kill(process.pid, signal);
+    return;
+  }
+
+  process.exit(code ?? 0);
+});
